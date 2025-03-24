@@ -1,0 +1,22 @@
+{
+  "name": "@repo/core",
+  "type": "module",
+  "description": "Generic rules for use in a monorepo for different scenarios",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./evaluators": {
+      "types": "./src/evaluators.ts",
+      "default": "./dist/evaluators.js"
+    }
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  }
+}

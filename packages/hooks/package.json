@@ -1,0 +1,24 @@
+{
+  "name": "@repo/hooks",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./hooks": {
+      "types": "./src/useRuleEngine.ts",
+      "default": "./dist/useRuleEngine.js"
+    }
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "@types/react": "19.0.10",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@repo/core": "workspace:*"
+  }
+}
