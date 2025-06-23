@@ -1,0 +1,272 @@
+.container {
+  height: 100%;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exportGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.exportSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.formatSection {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.exportButton {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.copyButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.copyButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.copyButtonSuccess {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.downloadButton {
+  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+  color: white;
+}
+
+.downloadButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(56, 178, 172, 0.3);
+}
+
+.exportButton:disabled {
+  background: #cbd5e0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.disabledMessage {
+  color: #718096;
+  font-style: italic;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.previewSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.codePreview {
+  flex: 1;
+  background: #1a202c;
+  border: 1px solid #2d3748;
+  border-radius: 12px;
+  padding: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  overflow: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  max-height: 500px;
+}
+
+.codePreview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.codePreview::-webkit-scrollbar-track {
+  background: #2d3748;
+  border-radius: 4px;
+}
+
+.codePreview::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+
+.codePreview::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+.useCasesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.useCaseCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.useCaseCard:hover {
+  border-color: #cbd5e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.useCaseTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 0.5rem 0;
+}
+
+.useCaseDesc {
+  color: #718096;
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.useCaseExample {
+  font-size: 0.85rem;
+}
+
+.useCaseExample summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: #f7fafc;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.useCaseExample summary:hover {
+  background: #edf2f7;
+}
+
+.useCaseExample pre {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.8rem;
+  overflow: auto;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.integrationTips {
+  background: #e6fffa;
+  border: 1px solid #b2f5ea;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.integrationTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #234e52;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.integrationList {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #234e52;
+}
+
+.integrationList li {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .exportGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .buttonGroup {
+    flex-direction: column;
+  }
+  
+  .codePreview {
+    max-height: 300px;
+    font-size: 0.8rem;
+  }
+}

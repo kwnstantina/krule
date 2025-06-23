@@ -8,7 +8,7 @@
   },
   "exports": {
     "./evaluators": {
-      "types": "./src/evaluators.ts",
+      "types": "./dist/evaluators.d.ts",
       "default": "./dist/evaluators.js"
     }
   },

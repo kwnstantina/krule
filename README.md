@@ -1,28 +1,44 @@
-# Turborepo starter
+# KRule - Rule Engine Builder
 
-This Turborepo starter is maintained by the Turborepo core team.
+A powerful, flexible rule engine with an interactive UI for building, testing, and exporting business rules for different use case scenarios.
 
-## Using this example
+## 🎯 Project Goals
 
-Run the following command:
+KRule aims to provide developers with:
 
-```sh
-npx create-turbo@latest
-```
+- **Visual Rule Creation**: Build complex business rules through an intuitive web interface
+- **Real-time Testing**: Test rules instantly with sample data to validate logic
+- **Multiple Export Formats**: Export rules as JSON, TypeScript, or JavaScript for easy integration
+- **Type Safety**: Full TypeScript support with comprehensive type definitions
+- **Flexible Evaluation**: Support for complex condition groups with AND/OR/XOR/NAND/NOR operators
+- **Extensible Architecture**: Custom operators and actions for specific use cases
 
-## What's inside?
+## 🚀 Use Cases
 
-This Turborepo includes the following packages/apps:
+- **E-commerce**: Dynamic pricing, discounts, and promotional rules
+- **Content Moderation**: Automated content filtering and flagging
+- **Access Control**: Role-based permissions and security rules
+- **Workflow Automation**: Business process rules and decision trees
+- **Data Validation**: Input validation and data quality rules
 
-### Apps and Packages
+## 📦 What's inside?
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+This monorepo includes the following packages and applications:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Apps
+
+- **`docs`** (port 3001): Documentation app with project overview and links to the rule builder
+- **`web`** (port 3000): Interactive KRule UI for building, testing, and exporting rules
+
+### Packages
+
+- **`@repo/core`**: Core rule engine with evaluation logic and type definitions
+- **`@repo/hooks`**: React hooks for rule engine integration
+- **`@repo/ui`**: Shared React component library
+- **`@repo/eslint-config`**: ESLint configurations
+- **`@repo/typescript-config`**: TypeScript configurations
+
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/) with comprehensive type safety.
 
 ### Utilities
 
@@ -32,53 +48,203 @@ This Turborepo has some additional tools already setup for you:
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
 
-### Build
+## 🛠️ Getting Started
 
-To build all apps and packages, run the following command:
+### Prerequisites
 
-```
-cd my-turborepo
-pnpm build
-```
+- Node.js 18+ 
+- pnpm (recommended) or npm
 
-### Develop
+### Installation
 
-To develop all apps and packages, run the following command:
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd krule
+   ```
 
-```
-cd my-turborepo
+2. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+3. **Build the core package:**
+   ```bash
+   pnpm build
+   ```
+
+### Development
+
+#### Option 1: Run All Apps (Recommended)
+
+```bash
 pnpm dev
 ```
 
-### Remote Caching
+This starts both apps simultaneously:
+- **Docs app**: http://localhost:3001
+- **Web app**: http://localhost:3000
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+#### Option 2: Run Individual Apps
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+**Start the documentation app:**
+```bash
+pnpm --filter docs dev
+```
+Visit: http://localhost:3001
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+**Start the rule builder UI:**
+```bash
+pnpm --filter web dev
+```
+Visit: http://localhost:3000
+
+### Production Build
+
+To build all apps and packages for production:
+
+```bash
+pnpm build
+```
+
+To build a specific app:
+
+```bash
+pnpm --filter web build
+pnpm --filter docs build
+```
+
+## 🎨 Using the Rule Builder
+
+1. **Access the UI**: Visit http://localhost:3001 and click "Launch Rule Builder"
+2. **Create Rules**: Use the visual form to build conditions and actions
+3. **Test Rules**: Switch to the "Test Rules" tab to validate with sample data
+4. **Export Rules**: Export your rules as JSON, TypeScript, or JavaScript code
+
+### Example Rule Structure
+
+```typescript
+import { Rule } from "@repo/core/evaluators";
+
+const rule: Rule = {
+  name: "Premium User Discount",
+  priority: 10,
+  condition: {
+    operator: "AND",
+    conditions: [
+      { field: "userType", operator: "==", value: "premium" },
+      { field: "cartValue", operator: ">=", value: 100 }
+    ]
+  },
+  actions: [
+    { type: "discount", target: "cart", payload: { percentage: 15 } }
+  ]
+};
+```
+
+## 🧩 Core Package Usage
+
+### Basic Rule Evaluation
+
+```typescript
+import { executeRules, Rule } from "@repo/core/evaluators";
+
+const rules: Rule[] = [
+  {
+    name: "VIP Customer Rule",
+    priority: 10,
+    condition: {
+      operator: "AND",
+      conditions: [
+        { field: "customerType", operator: "==", value: "VIP" },
+        { field: "orderAmount", operator: ">=", value: 500 }
+      ]
+    },
+    actions: [
+      { type: "discount", target: "order", payload: { percentage: 20 } },
+      { type: "upgrade", target: "shipping", payload: { type: "express" } }
+    ]
+  }
+];
+
+const context = {
+  customerType: "VIP",
+  orderAmount: 750,
+  country: "US"
+};
+
+const results = executeRules(rules, context);
+console.log(results); // Map with triggered actions
+```
+
+### Available Operators
+
+- **Comparison**: `==`, `!=`, `>`, `<`, `>=`, `<=`
+- **Array**: `in`, `not`
+- **Logical Groups**: `AND`, `OR`, `XOR`, `NAND`, `NOR`
+
+### Custom Operators
+
+```typescript
+import { registerOperator } from "@repo/core/evaluators";
+
+registerOperator({
+  name: "CUSTOM_LOGIC",
+  evaluate: (conditions: boolean[]) => {
+    // Your custom logic here
+    return conditions.some(Boolean) && conditions.length > 2;
+  }
+});
+```
+
+## 🔧 Development Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start all apps in development mode |
+| `pnpm build` | Build all packages and apps |
+| `pnpm lint` | Run ESLint across all packages |
+| `pnpm clean` | Clean all build artifacts |
+| `pnpm type-check` | Run TypeScript type checking |
+
+## 📁 Project Structure
 
 ```
-cd my-turborepo
-npx turbo login
+krule/
+├── apps/
+│   ├── docs/          # Documentation app (port 3001)
+│   └── web/           # Rule builder UI (port 3000)
+├── packages/
+│   ├── core/          # Rule engine logic
+│   ├── hooks/         # React hooks
+│   ├── ui/            # Shared components
+│   ├── eslint-config/ # ESLint configurations
+│   └── typescript-config/ # TypeScript configurations
+├── package.json       # Root package.json
+├── turbo.json        # Turborepo configuration
+└── README.md         # This file
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 🤝 Contributing
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and add tests
+4. Run the type checker: `pnpm type-check`
+5. Run the linter: `pnpm lint`
+6. Commit your changes: `git commit -m 'Add amazing feature'`
+7. Push to the branch: `git push origin feature/amazing-feature`
+8. Open a Pull Request
 
-```
-npx turbo link
-```
+## 📄 License
 
-## Useful Links
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Learn more about the power of Turborepo:
+## 🔗 Useful Links
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+Learn more about the technologies used:
+
+- [Turborepo](https://turbo.build/repo) - Build system
+- [Next.js](https://nextjs.org/) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Zod](https://zod.dev/) - Schema validation
