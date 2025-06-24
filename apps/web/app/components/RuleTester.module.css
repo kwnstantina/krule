@@ -1,5 +1,6 @@
 .container {
   height: 100%;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .title {
@@ -59,6 +60,7 @@
   background: #fafafa;
   transition: all 0.2s ease;
   min-height: 300px;
+  color:#141921;
 }
 
 .textarea:focus {
@@ -240,6 +242,14 @@
   font-size: 0.8rem;
   color: #718096;
 }
+
+
+.paragraph {
+  margin: 0;
+  color: #141921;
+  font-size: 0.9rem;
+}
+
 
 @media (max-width: 768px) {
   .testGrid {

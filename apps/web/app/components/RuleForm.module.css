@@ -5,6 +5,8 @@
   padding: 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: #141921;
 }
 
 .formTitle {
@@ -43,6 +45,7 @@
   font-size: 0.95rem;
   transition: all 0.2s ease;
   background: #fafafa;
+     color: #141921;
 }
 
 .input:focus {
@@ -50,6 +53,7 @@
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   background: white;
+     color: #141921;
 }
 
 .input::placeholder {
@@ -117,17 +121,19 @@
 
 .select {
   padding: 0.75rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #264369;
   border-radius: 8px;
   font-size: 0.95rem;
-  background: white;
+  background:white;
   transition: all 0.2s ease;
+   color: #141921;
 }
 
 .select:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+   color: #141921;
 }
 
 .removeButton {

@@ -92,7 +92,7 @@ export default function RuleTester({ rules }: RuleTesterProps) {
         <div className={styles.emptyState}>
           <div className={styles.emptyStateIcon}>📝</div>
           <h4 style={{ margin: "0 0 0.5rem 0", color: "#4a5568" }}>No rules to test</h4>
-          <p style={{ margin: 0 }}>
+          <p  className={styles.paragraph}>
             Create some rules first in the Rule Builder tab, or load example rules to get started.
           </p>
         </div>
