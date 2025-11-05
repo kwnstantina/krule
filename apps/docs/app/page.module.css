@@ -23,6 +23,7 @@
   overflow-x: hidden;
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-geist-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -186,6 +187,8 @@
   margin-bottom: 2rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 .badgeDot {
@@ -208,6 +211,7 @@
   line-height: 1.1;
   margin: 0 0 1.5rem;
   letter-spacing: -0.02em;
+  font-family: var(--font-geist-sans);
 }
 
 .gradient {
@@ -232,6 +236,8 @@
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 /* CTA Buttons */
@@ -257,6 +263,8 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 .primaryCta {
@@ -338,12 +346,16 @@
   background-clip: text;
   line-height: 1;
   margin-bottom: 0.5rem;
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.02em;
 }
 
 .statLabel {
   font-size: 0.875rem;
   color: rgba(var(--gray-rgb), 0.6);
   font-weight: 500;
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 .statDivider {
@@ -386,12 +398,15 @@
   font-weight: 700;
   margin: 0 0 1rem;
   letter-spacing: -0.02em;
+  font-family: var(--font-geist-sans);
 }
 
 .demoDescription {
   font-size: 1.25rem;
   color: rgba(var(--gray-rgb), 0.7);
   margin: 0;
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 /* Demo Preview */
@@ -458,68 +473,208 @@
 /* Mock Interface */
 .mockInterface {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   height: 100%;
+  font-size: 0.875rem;
 }
 
+/* Sidebar */
 .mockSidebar {
-  width: 200px;
+  width: 180px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
+}
+
+.sidebarTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(var(--gray-rgb), 0.5);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+  font-family: var(--font-geist-sans);
 }
 
 .mockItem {
-  height: 40px;
-  background: rgba(var(--gray-rgb), 0.08);
-  border-radius: 8px;
-  animation: shimmer 2s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: rgba(var(--gray-rgb), 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.mockItem:nth-child(1) { animation-delay: 0s; }
-.mockItem:nth-child(2) { animation-delay: 0.2s; }
-.mockItem:nth-child(3) { animation-delay: 0.4s; }
-.mockItem:nth-child(4) { animation-delay: 0.6s; }
+.mockItem:hover {
+  background: rgba(var(--gray-rgb), 0.08);
+  transform: translateX(2px);
+}
 
+.itemIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.itemText {
+  font-size: 0.8125rem;
+  color: rgba(var(--gray-rgb), 0.7);
+  font-weight: 500;
+  font-family: var(--font-geist-sans);
+}
+
+/* Main Canvas */
 .mockMain {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-.mockCard {
-  background: rgba(var(--gray-rgb), 0.05);
+/* Rule Header */
+.ruleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(var(--gray-rgb), 0.03);
   border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.ruleTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans);
+}
+
+.ruleStatus {
+  padding: 0.25rem 0.75rem;
+  background: rgba(34, 197, 94, 0.1);
+  color: rgb(34, 197, 94);
   border-radius: 12px;
-  padding: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-geist-sans);
 }
 
-.mockCardHeader {
-  height: 24px;
-  width: 60%;
-  background: rgba(var(--gray-rgb), 0.1);
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  animation: shimmer 2s ease-in-out infinite;
+/* Rule Blocks */
+.ruleBlock {
+  background: rgba(var(--gray-rgb), 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.mockCardContent {
+.blockHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(var(--gray-rgb), 0.05);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.blockLabel {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #3b82f6;
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+  font-family: var(--font-geist-mono, monospace);
+}
+
+.blockTitle {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans);
+}
+
+.blockContent {
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.mockLine {
-  height: 16px;
-  background: rgba(var(--gray-rgb), 0.08);
-  border-radius: 4px;
-  animation: shimmer 2s ease-in-out infinite;
+/* Condition Rows */
+.conditionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(var(--gray-rgb), 0.04);
+  border-radius: 6px;
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 0.8125rem;
 }
 
-.mockLine:nth-child(1) { width: 80%; animation-delay: 0.1s; }
-.mockLine:nth-child(2) { width: 60%; animation-delay: 0.2s; }
-.mockLine:nth-child(3) { width: 70%; animation-delay: 0.3s; }
+.conditionField {
+  color: #8b5cf6;
+  font-weight: 600;
+}
+
+.conditionOperator {
+  color: #f59e0b;
+  font-weight: 700;
+  padding: 0 0.25rem;
+}
+
+.conditionValue {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.logicConnector {
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: rgba(var(--gray-rgb), 0.5);
+  padding: 0.25rem;
+  font-family: var(--font-geist-sans);
+}
+
+/* Flow Arrow */
+.flowArrow {
+  text-align: center;
+  font-size: 1.5rem;
+  color: rgba(var(--gray-rgb), 0.3);
+  padding: 0.5rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+/* Action Rows */
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  background: rgba(var(--gray-rgb), 0.04);
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.actionIcon {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.actionText {
+  font-size: 0.875rem;
+  color: var(--foreground);
+  font-weight: 500;
+  font-family: var(--font-geist-sans);
+}
 
 @keyframes shimmer {
   0%, 100% { opacity: 1; }
@@ -572,11 +727,14 @@
   font-weight: 600;
   font-size: 0.875rem;
   color: rgba(16, 185, 129, 1);
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 .floatingCardSubtitle {
   font-size: 0.75rem;
   color: rgba(var(--gray-rgb), 0.6);
+  font-family: var(--font-geist-sans);
 }
 
 /* Setup Note */
@@ -593,6 +751,8 @@
   color: rgba(var(--gray-rgb), 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  font-family: var(--font-geist-sans);
+  letter-spacing: -0.01em;
 }
 
 .setupNote svg {
@@ -659,16 +819,74 @@
   .mockInterface {
     flex-direction: column;
     gap: 1rem;
+    font-size: 0.8125rem;
   }
 
   .mockSidebar {
     width: 100%;
     flex-direction: row;
     overflow-x: auto;
+    gap: 0.5rem;
+  }
+
+  .sidebarTitle {
+    display: none;
   }
 
   .mockItem {
-    min-width: 100px;
+    min-width: auto;
+    flex-shrink: 0;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .itemIcon {
+    font-size: 0.875rem;
+  }
+
+  .itemText {
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .ruleHeader {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .ruleTitle {
+    font-size: 0.875rem;
+  }
+
+  .ruleStatus {
+    font-size: 0.6875rem;
+    padding: 0.1875rem 0.625rem;
+  }
+
+  .blockHeader {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .blockContent {
+    padding: 0.75rem;
+  }
+
+  .conditionRow {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  .flowArrow {
+    font-size: 1.25rem;
+    padding: 0.25rem;
+  }
+
+  .actionRow {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .actionText {
+    font-size: 0.8125rem;
   }
 
   .floatingCard {

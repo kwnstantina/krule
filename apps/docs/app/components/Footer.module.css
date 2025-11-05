@@ -1,20 +1,260 @@
+/* Footer Container */
 .footer {
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-  padding: 1rem 0;
+  background: var(--background);
+  border-top: 1px solid #e5e7eb;
   margin-top: auto;
+  margin-left: 280px;
+  font-family: var(--font-geist-sans);
+  transition: margin-left 0.2s ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  .footer {
+    border-top-color: #262626;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    margin-left: 0;
+  }
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
-  text-align: center;
+  padding: 4rem 2rem 2rem;
 }
 
-.text {
+/* Main Content Grid */
+.content {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 4rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 968px) {
+  .content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+}
+
+/* Brand Section */
+.brandSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.logoIcon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  color: #6b7280;
+  font-size: 0.9375rem;
+  line-height: 1.6;
   margin: 0;
-  color: #6c757d;
+  max-width: 400px;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tagline {
+    color: #9ca3af;
+  }
+}
+
+/* Social Links */
+.socialLinks {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #6b7280;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.socialLink:hover {
+  color: var(--foreground);
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .socialLink {
+    color: #9ca3af;
+    border-color: #374151;
+  }
+
+  .socialLink:hover {
+    color: #f3f4f6;
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+}
+
+/* Links Grid */
+.linksGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .linksGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .linksGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Link Columns */
+.linkColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.columnTitle {
   font-size: 0.875rem;
-  line-height: 1.5;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.link {
+  color: #6b7280;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  letter-spacing: -0.01em;
+  display: inline-block;
+}
+
+.link:hover {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .link {
+    color: #9ca3af;
+  }
+
+  .link:hover {
+    color: #f3f4f6;
+  }
+}
+
+/* Bottom Bar */
+.bottomBar {
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bottomBar {
+    border-top-color: #262626;
+  }
+}
+
+@media (max-width: 640px) {
+  .bottomBar {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}
+
+.copyright {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .copyright {
+    color: #9ca3af;
+  }
+}
+
+.builtWith {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .builtWith {
+    color: #6b7280;
+  }
+}
+
+/* Focus States for Accessibility */
+.link:focus-visible,
+.socialLink:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Smooth Transitions */
+@media (prefers-reduced-motion: no-preference) {
+  .socialLink,
+  .link {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }

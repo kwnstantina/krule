@@ -1,4 +1,5 @@
 import React from 'react';
+import '../docs.css';
 
 export const metadata = {
   title: 'Rule Builder Interface - KRule Documentation',
@@ -93,7 +94,7 @@ export default function RuleBuilderPage() {
                 <div className="logical-operator">AND</div>
                 <div className="condition-block">
                   <span className="condition-field">order.total</span>
-                  <span className="condition-operator">></span>
+                  <span className="condition-operator">&gt;</span>
                   <span className="condition-value">100</span>
                 </div>
               </div>
@@ -180,7 +181,7 @@ max: 200`}</code></pre>
                 <div className="logical-op">OR</div>
                 <div className="condition-row">
                   <span className="field">user.loyaltyPoints</span>
-                  <span className="op">></span>
+                  <span className="op">&gt;</span>
                   <span className="value">1000</span>
                 </div>
               </div>
@@ -194,7 +195,7 @@ max: 200`}</code></pre>
               <div className="condition-content">
                 <div className="condition-row">
                   <span className="field">order.total</span>
-                  <span className="op">>=</span>
+                  <span className="op">&gt;=</span>
                   <span className="value">100</span>
                 </div>
                 <div className="logical-op">AND</div>

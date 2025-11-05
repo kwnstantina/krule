@@ -1,4 +1,5 @@
 import React from 'react';
+import '../docs.css';
 
 export const metadata = {
   title: 'Rule Engine Basics - KRule Documentation',
