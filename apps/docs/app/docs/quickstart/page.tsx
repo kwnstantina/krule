@@ -1,12 +1,23 @@
 import React from 'react';
 import '../docs.css';
 
+
 export const metadata = {
   title: 'Quick Start - KRule Documentation',
   description: 'Get up and running with KRule in minutes with this quick start guide',
 };
 
 export default function QuickStartPage() {
+  const order = {
+  total: 200,
+  };
+
+  const finalOrder = {
+    discountApplied: true,
+    discount: 20,
+    finalTotal: 180,
+  };
+  
   return (
     <div className="docs-content">
       <div className="docs-header">
@@ -93,10 +104,12 @@ export default function QuickStartPage() {
       <div className="docs-section">
         <h2>Real-World Example</h2>
         <p>Let's build a practical e-commerce discount rule:</p>
-        
-        <h3>Scenario</h3>
-        <p>Apply a 10% discount for orders over $100 from VIP customers.</p>
-        
+
+        <div className="example-scenario">
+          <h3>Scenario</h3>
+          <p>Apply a 10% discount for orders over $100 from VIP customers.</p>
+        </div>
+
         <h3>Rule Configuration</h3>
         <div className="code-block">
           <pre><code>{`{
@@ -167,10 +180,11 @@ export default function QuickStartPage() {
 
       <div className="docs-section">
         <h2>Integration Examples</h2>
-        
-        <h3>React Integration</h3>
-        <div className="code-block">
-          <pre><code>{`import { RuleEngine } from 'krule-engine';
+
+        <div className="integration-section">
+          <h3>React Integration</h3>
+          <div className="code-block">
+            <pre><code>{`import { RuleEngine } from 'krule-engine';
 import { useState, useEffect } from 'react';
 
 function CheckoutComponent({ order, customer }) {
@@ -200,11 +214,14 @@ function CheckoutComponent({ order, customer }) {
     </div>
   );
 }`}</code></pre>
+          </div>
         </div>
+        
 
-        <h3>Node.js Backend Integration</h3>
-        <div className="code-block">
-          <pre><code>{`const { RuleEngine } = require('krule-engine');
+        <div className="integration-section">
+          <h3>Node.js Backend Integration</h3>
+          <div className="code-block">
+            <pre><code>{`const { RuleEngine } = require('krule-engine');
 const express = require('express');
 
 const app = express();
@@ -217,7 +234,7 @@ app.post('/api/apply-rules', (req, res) => {
   try {
     const { data } = req.body;
     const result = engine.executeRules(rules, data);
-    
+
     res.json({
       success: true,
       data: result,
@@ -234,45 +251,55 @@ app.post('/api/apply-rules', (req, res) => {
 app.listen(3000, () => {
   console.log('Rule engine server running on port 3000');
 });`}</code></pre>
+          </div>
         </div>
       </div>
 
       <div className="docs-section">
         <h2>Best Practices</h2>
-        
-        <div className="best-practice">
-          <h3>🎯 Keep Rules Simple</h3>
-          <p>Start with simple conditions and actions. Complex rules can be built by combining simpler ones.</p>
-        </div>
 
-        <div className="best-practice">
-          <h3>🧪 Test Thoroughly</h3>
-          <p>Always test your rules with various data scenarios, including edge cases and invalid data.</p>
-        </div>
+        <div className="practices-grid">
+          <div className="practice-card">
+            <div className="feature-icon">🎯</div>
+            <h3>Keep Rules Simple</h3>
+            <p>Start with simple conditions and actions. Complex rules can be built by combining simpler ones.</p>
+          </div>
 
-        <div className="best-practice">
-          <h3>📝 Document Your Rules</h3>
-          <p>Use descriptive names and descriptions for your rules to make them maintainable.</p>
-        </div>
+          <div className="practice-card">
+            <div className="feature-icon">🧪</div>
+            <h3>Test Thoroughly</h3>
+            <p>Always test your rules with various data scenarios, including edge cases and invalid data.</p>
+          </div>
 
-        <div className="best-practice">
-          <h3>🔄 Version Control</h3>
-          <p>Store your rules in version control and track changes over time.</p>
-        </div>
+          <div className="practice-card">
+            <div className="feature-icon">📝</div>
+            <h3>Document Your Rules</h3>
+            <p>Use descriptive names and descriptions for your rules to make them maintainable.</p>
+          </div>
 
-        <div className="best-practice">
-          <h3>⚡ Performance Optimization</h3>
-          <p>Order conditions by likelihood of being false to short-circuit evaluation.</p>
+          <div className="practice-card">
+            <div className="feature-icon">🔄</div>
+            <h3>Version Control</h3>
+            <p>Store your rules in version control and track changes over time.</p>
+          </div>
+
+          <div className="practice-card">
+            <div className="feature-icon">⚡</div>
+            <h3>Performance Optimization</h3>
+            <p>Order conditions by likelihood of being false to short-circuit evaluation.</p>
+          </div>
         </div>
       </div>
 
       <div className="docs-section">
         <h2>Common Patterns</h2>
-        
-        <h3>Conditional Logic</h3>
-        <div className="code-block">
-          <pre><code>{`// IF-THEN-ELSE pattern
-{
+
+        <div className="patterns-section">
+          <div className="pattern-card">
+            <h3>Conditional Logic</h3>
+            <p>IF-THEN-ELSE pattern for handling different outcomes:</p>
+            <div className="code-block">
+              <pre><code>{`{
   "conditions": [
     { "field": "user.age", "operator": ">=", "value": 18 }
   ],
@@ -283,12 +310,14 @@ app.listen(3000, () => {
     { "type": "set", "field": "access", "value": "denied" }
   ]
 }`}</code></pre>
-        </div>
+            </div>
+          </div>
 
-        <h3>Nested Conditions</h3>
-        <div className="code-block">
-          <pre><code>{`// Complex AND/OR logic
-{
+          <div className="pattern-card">
+            <h3>Nested Conditions</h3>
+            <p>Complex AND/OR logic for multiple criteria:</p>
+            <div className="code-block">
+              <pre><code>{`{
   "conditions": {
     "operator": "AND",
     "conditions": [
@@ -303,12 +332,14 @@ app.listen(3000, () => {
     ]
   }
 }`}</code></pre>
-        </div>
+            </div>
+          </div>
 
-        <h3>Dynamic Calculations</h3>
-        <div className="code-block">
-          <pre><code>{`// Calculate based on multiple fields
-{
+          <div className="pattern-card">
+            <h3>Dynamic Calculations</h3>
+            <p>Calculate values based on multiple fields and conditions:</p>
+            <div className="code-block">
+              <pre><code>{`{
   "actions": [
     {
       "type": "calculate",
@@ -317,6 +348,8 @@ app.listen(3000, () => {
     }
   ]
 }`}</code></pre>
+            </div>
+          </div>
         </div>
       </div>
 
