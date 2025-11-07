@@ -108,7 +108,7 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
     <div>
       <div className={styles.exampleRules}>
         <h4 className={styles.exampleTitle}>
-          ⚡ Quick Start Examples
+          Quick Start Examples
         </h4>
         <div className={styles.exampleGrid}>
           {exampleRules.map((example, index) => (
@@ -119,7 +119,7 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
             >
               <h5 className={styles.exampleCardTitle}>{example.name}</h5>
               <p className={styles.exampleCardDesc}>
-                {example.conditions.length} condition(s), {example.actions.length} action(s)
+                {example.conditions.length} condition{example.conditions.length !== 1 ? 's' : ''}, {example.actions.length} action{example.actions.length !== 1 ? 's' : ''}
               </p>
             </div>
           ))}
@@ -128,7 +128,7 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
 
       <form onSubmit={handleSubmit} className={styles.formContainer}>
         <h3 className={styles.formTitle}>
-          🛠️ Create New Rule
+          Create New Rule
         </h3>
         
         <div className={styles.formGrid}>
@@ -163,10 +163,10 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h4 className={styles.sectionTitle}>
-              🔗 Conditions
+              Conditions
             </h4>
             <button type="button" onClick={addCondition} className={styles.addButton}>
-              + Add Condition
+              Add Condition
             </button>
           </div>
           
