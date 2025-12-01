@@ -1,0 +1,108 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and ownership
+model User {
+  id            String          @id @default(cuid())
+  email         String?         @unique
+  name          String?
+  apiKey        String?         @unique // For SDK authentication
+  conversations Conversation[]
+  rules         GeneratedRule[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([email])
+  @@index([apiKey])
+}
+
+// Conversation tracks a multi-turn chat session
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?   // Auto-generated from first message
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Individual message in a conversation
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String       // "user" | "assistant" | "system"
+  content        String       @db.Text
+  ruleSnapshot   Json?        // Rule state at this message (if applicable)
+  tokenCount     Int?         // Track token usage
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+// Generated rules with metadata
+model GeneratedRule {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String   // Rule name
+  prompt      String   @db.Text // Original user prompt
+  ruleData    Json     // The complete rule object
+  validated   Boolean  @default(false) // Passed Zod validation
+  deployed    Boolean  @default(false) // Deployed to production
+  version     Int      @default(1) // Version number for tracking
+  parentId    String?  // Reference to previous version (refinement)
+  metadata    Json?    // Additional metadata (tags, use case, etc.)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([validated])
+}
+
+// Validation attempts for analytics
+model ValidationAttempt {
+  id          String   @id @default(cuid())
+  ruleData    Json     // The rule that was validated
+  success     Boolean  // Did it pass validation
+  errors      Json?    // Zod validation errors
+  prompt      String?  @db.Text // Original prompt (if available)
+  aiExplanation String? @db.Text // AI's explanation of the error
+  createdAt   DateTime @default(now())
+
+  @@index([success])
+  @@index([createdAt])
+}
+
+// API usage tracking for rate limiting and analytics
+model ApiUsage {
+  id           String   @id @default(cuid())
+  userId       String?
+  apiKey       String?
+  endpoint     String   // Which API endpoint was called
+  method       String   // HTTP method
+  statusCode   Int      // Response status
+  responseTime Int      // Response time in ms
+  tokenCount   Int?     // Tokens used (for LLM calls)
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([apiKey])
+  @@index([createdAt])
+  @@index([endpoint])
+}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import RuleForm from "./RuleForm";
 import RuleTester from "./RuleTester";
 import RuleExporter from "./RuleExporter";
+import AIAssistant from "./AIAssistant";
 import { Rule } from "@repo/core/evaluators";
 import styles from "./RuleBuilder.module.css";
 
@@ -42,7 +43,7 @@ const exampleRules: Rule[] = [
 
 export default function RuleBuilder() {
   const [rules, setRules] = useState<Rule[]>([]);
-  const [activeTab, setActiveTab] = useState<"builder" | "tester" | "exporter">("builder");
+  const [activeTab, setActiveTab] = useState<"builder" | "tester" | "exporter" | "ai">("builder");
 
   const addRule = (rule: Rule) => {
     setRules(prev => [...prev, { ...rule, id: Date.now().toString() }]);
@@ -80,6 +81,12 @@ export default function RuleBuilder() {
         </header>
 
         <div className={styles.tabContainer}>
+          <button
+            className={`${styles.tab} ${activeTab === "ai" ? styles.tabActive : ""}`}
+            onClick={() => setActiveTab("ai")}
+          >
+            🤖 AI Assistant
+          </button>
           <button
             className={`${styles.tab} ${activeTab === "builder" ? styles.tabActive : ""}`}
             onClick={() => setActiveTab("builder")}
@@ -224,6 +231,16 @@ export default function RuleBuilder() {
                 )}
               </div>
             </div>
+          )}
+
+          {activeTab === "ai" && (
+            <AIAssistant
+              onRuleGenerated={(rule) => {
+                addRule(rule);
+                setActiveTab("builder"); // Switch to builder tab after accepting rule
+              }}
+              userId="demo-user"
+            />
           )}
 
           {activeTab === "tester" && <RuleTester rules={rules} />}

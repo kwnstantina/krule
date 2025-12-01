@@ -8,8 +8,8 @@
   },
   "exports": {
     "./evaluators": {
-      "types": "./dist/evaluators.d.ts",
-      "default": "./dist/evaluators.js"
+      "types": "./src/evaluators.ts",
+      "default": "./src/evaluators.ts"
     }
   },
   "devDependencies": {
