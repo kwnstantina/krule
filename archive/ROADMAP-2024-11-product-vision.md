@@ -1,3 +1,12 @@
+> **ARCHIVED — superseded, kept for reference only.**
+>
+> This is the original November 2024 product/GTM roadmap, which framed KRule as a
+> commercial rule-engine SaaS (pricing tiers, MRR targets, marketplace, org charts).
+> The current initiative is **Business Logic Observability** — see `.planning/BRIEF.md`
+> and `.planning/ROADMAP.md`. Much of what follows is explicitly **out of scope** there,
+> and its decisions log is stale (e.g. it records Groq as the AI provider; the current
+> direction mandates Claude/Anthropic). Do not plan from this file.
+
 # KRule Product Roadmap
 
 > **Vision**: Become the industry-standard rule engine platform that bridges the gap between business logic and code, enabling organizations to manage decisions as first-class citizens.
