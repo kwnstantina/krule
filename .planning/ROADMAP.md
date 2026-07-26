@@ -15,7 +15,7 @@ input/output equivalence proven by Verify rather than asserted.
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** - Test runner, a correct `@repo/core` evaluator, and the `@repo/kontract` schema
+- [x] **Phase 1: Foundation** - Test runner, a correct `@repo/core` evaluator, and the `@repo/kontract` schema
 - [ ] **Phase 2: Benchmark** - Synthetic legacy fixture, ground-truth answer key, and the scoring harness
 - [ ] **Phase 3: Discover** - Provider-abstracted extraction that emits `rules.kontract.yaml` and clears 80%
 - [ ] **Phase 4: Verify** - Generated executable tests per rule, run against real code, status written back
@@ -32,7 +32,7 @@ input/output equivalence proven by Verify rather than asserted.
 Plans:
 - [x] 01-01: Add Vitest — root config, `test` task in `turbo.json`, per-package wiring, one passing smoke test
 - [x] 01-02: Fix `@repo/core` evaluator — recursive group evaluation and custom-operator dispatch, driven by tests written first
-- [ ] 01-03: `@repo/kontract` — Zod schema for a kontract rule (id, plain-language statement, provenance, confidence, status), YAML read/write, round-trip tests
+- [x] 01-03: `@repo/kontract` — Zod schema for a kontract rule (id, plain-language statement, provenance, confidence, status), YAML read/write, round-trip tests
 
 **Why the evaluator fix is here:** the brief reuses `@repo/core` "as-is" as the Runtime
 layer, but `packages/core/src/evaluator.ts:36` hands raw condition *objects* to the group
@@ -94,7 +94,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/3 | In progress | - |
+| 1. Foundation | 3/3 | Complete | 2026-07-26 |
 | 2. Benchmark | 0/2 | Not started | - |
 | 3. Discover | 0/3 | Not started | - |
 | 4. Verify | 0/3 | Not started | - |

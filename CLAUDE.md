@@ -64,6 +64,15 @@ UI (AIAssistant / chat components)
 - **Self-correcting generation loop** (`packages/ai-service/src/rule-generator.ts`): calls Groq → `extractJSON` strips markdown fences → `RuleSchema.parse`. On a `ZodError` it feeds the validation errors back into the prompt and retries, up to `maxRetries` (default 3). Prompts live in `packages/ai-service/src/prompts.ts` — edit these to change AI behavior.
 - **`@repo/ai-sdk`** (`packages/ai-sdk/src/client.ts`) is a standalone HTTP client (`KRuleAI`) that hits the deployed `/api/ai/*` endpoints — it is the external/programmatic entry point, separate from `@repo/ai-service` (which runs *inside* the routes).
 
+### 3. The kontract layer (`@repo/kontract`) — canonical extracted-rule format
+
+Added by the **Business Logic Observability** initiative (see `.planning/BRIEF.md` and `.planning/ROADMAP.md`). This is the format for `rules.kontract.yaml`, the artifact that initiative is built around: Discover writes it, Verify annotates it, the audit report renders it, and CI diffs it for drift.
+
+- `packages/kontract/src/schema.ts` — Zod schemas, types inferred from them. A `KontractRule` = `{ id, statement, provenance[], confidence, origins[], status, tags?, notes? }`. `id` must match `R-<digits>`. `status` is one of `verified | unverified | contradicted | drifted` and **defaults to `unverified`** — nothing is trusted until Verify proves it. `origins` (`code | schema | data | docs`) is what the audit report's Dark Logic (code-only) and Dead Rules (docs-only) sections derive from. A `KontractDocument` wraps `{ kontractVersion: 1, module, generatedAt, commit, rules[] }` and rejects duplicate rule ids.
+- `packages/kontract/src/io.ts` — `parseKontract` / `serializeKontract` / `readKontractFile` / `writeKontractFile`, plus `updateRuleStatuses`. **Use `updateRuleStatuses` for in-place status rewrites**, not parse → mutate → serialize: it edits the YAML AST so reviewer comments survive, whereas the plain-object round trip discards every comment in the file.
+- `ZodError`s are deliberately left to propagate from `parseKontract` — the AI generation loop feeds them back into the prompt to retry, so swallowing them breaks self-correction.
+- Distinct from `@repo/core`'s `RuleSchema`: a kontract rule is a *documented, evidenced* business rule in plain language; a core `Rule` is an *executable* one. Phase 6 links them; there is intentionally no executable-rule field on `KontractRule` yet.
+
 ### Apps
 - `apps/web` — the rule builder (:3000). `app/page.tsx` just renders `RuleBuilder`; the UI is tabbed (AI Assistant, build, test, export) under `app/components/`. All AI backend logic is in `app/api/ai/`.
 - `apps/docs` — Next.js documentation site (:3001). Content-only; does **not** depend on `core`/`ai-service`/`database` (only `@repo/ui`).
