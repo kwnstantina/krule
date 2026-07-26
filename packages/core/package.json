@@ -4,7 +4,9 @@
   "description": "Generic rules for use in a monorepo for different scenarios",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "check-types": "tsc -p tsconfig.test.json",
+    "test": "vitest run"
   },
   "exports": {
     "./evaluators": {
@@ -14,7 +16,8 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "typescript": "latest"
+    "typescript": "latest",
+    "vitest": "^3.2.7"
   },
   "dependencies": {
     "zod": "^3.24.2"
