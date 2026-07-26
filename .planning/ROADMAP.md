@@ -31,7 +31,7 @@ input/output equivalence proven by Verify rather than asserted.
 
 Plans:
 - [x] 01-01: Add Vitest — root config, `test` task in `turbo.json`, per-package wiring, one passing smoke test
-- [ ] 01-02: Fix `@repo/core` evaluator — recursive group evaluation and custom-operator dispatch, driven by tests written first
+- [x] 01-02: Fix `@repo/core` evaluator — recursive group evaluation and custom-operator dispatch, driven by tests written first
 - [ ] 01-03: `@repo/kontract` — Zod schema for a kontract rule (id, plain-language statement, provenance, confidence, status), YAML read/write, round-trip tests
 
 **Why the evaluator fix is here:** the brief reuses `@repo/core` "as-is" as the Runtime
@@ -94,7 +94,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/3 | In progress | - |
+| 1. Foundation | 2/3 | In progress | - |
 | 2. Benchmark | 0/2 | Not started | - |
 | 3. Discover | 0/3 | Not started | - |
 | 4. Verify | 0/3 | Not started | - |
