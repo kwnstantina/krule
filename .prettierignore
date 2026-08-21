@@ -1,0 +1,4 @@
+# The benchmark fixture is deliberately badly formatted, and the Phase 2 answer
+# key pins rule provenance to specific line numbers in it. Reformatting would
+# shift those lines and silently invalidate the whole benchmark.
+fixtures/

@@ -45,7 +45,7 @@ read. Phase 6 cannot prove equivalence against an engine that mis-evaluates nest
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Synthetic legacy fixture module — code + schema + seed data + deliberately stale docs, with planted dark logic (code-only rules), dead rules (doc-only), and at least one genuine contradiction
+- [x] 02-01: Synthetic legacy fixture module — code + schema + seed data + deliberately stale docs, with planted dark logic (code-only rules), dead rules (doc-only), and at least one genuine contradiction
 - [ ] 02-02: Ground-truth answer key expressed in kontract form, plus the scoring harness (precision/recall against the key, reports the ≥80% figure)
 
 **Sequencing note:** this precedes Discover on purpose. An answer key written after seeing
@@ -95,7 +95,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-07-26 |
-| 2. Benchmark | 0/2 | Not started | - |
+| 2. Benchmark | 1/2 | In progress | - |
 | 3. Discover | 0/3 | Not started | - |
 | 4. Verify | 0/3 | Not started | - |
 | 5. Audit & Drift | 0/3 | Not started | - |
