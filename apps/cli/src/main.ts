@@ -10,6 +10,7 @@ import {
 import { createProvider, describeProvider } from "@repo/llm";
 import { renderReport } from "@repo/report";
 import { toStatusMap, verifyDocument } from "@repo/verify";
+import { DEMO_BANNER, loadAnswerKeyKontract } from "./demo";
 import { loadPlanted, scoreAgainstPlanted } from "./score";
 import { readFile } from "node:fs/promises";
 
@@ -56,6 +57,8 @@ const HELP = `krule — business logic observability
   krule report <module>     Render ${REPORT_FILE} from the kontract
   krule score <module>      Score the kontract against the fixture's PLANTED.md answer key
   krule audit <module>      discover, verify, report and score in one pass
+  krule demo <module>       Same pipeline with extraction simulated from the answer
+                            key, for running without an API key
 
 Options
   --out <dir>               Where to write artifacts (default: current directory)
@@ -257,6 +260,35 @@ async function commandScore(args: Args): Promise<void> {
   }
 }
 
+async function commandDemo(args: Args): Promise<void> {
+  process.stdout.write(DEMO_BANNER + "\n");
+
+  const document = await loadAnswerKeyKontract(args.modulePath);
+  const target = join(args.out, KONTRACT_FILE);
+  await writeFile(target, serializeKontract(document), "utf8");
+  process.stdout.write(
+    "  " +
+      String(document.rules.length) +
+      " rules loaded from the answer key\n  → " +
+      target +
+      "\n",
+  );
+
+  process.stdout.write("\nverify   (real — re-reads the fixture source)\n");
+  await commandVerify(args);
+  process.stdout.write("\nreport   (real)\n");
+  await commandReport(args);
+  process.stdout.write("\nscore    (circular in demo mode — see below)\n");
+  await commandScore(args);
+  // Scoring the answer key against the answer key is 100% by construction. Say
+  // so rather than letting a meaningless number look like a result.
+  process.stdout.write(
+    "\n  NOTE  In demo mode the input to scoring IS the answer key, so 100%\n" +
+      "        is guaranteed and measures nothing. The score is only\n" +
+      "        meaningful after a real krule discover run.\n",
+  );
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const resolvedModule = resolve(args.modulePath);
@@ -274,6 +306,9 @@ async function main(): Promise<void> {
       break;
     case "score":
       await commandScore(withResolved);
+      break;
+    case "demo":
+      await commandDemo(withResolved);
       break;
     case "audit":
       process.stdout.write("\ndiscover\n");
