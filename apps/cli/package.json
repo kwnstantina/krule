@@ -1,0 +1,26 @@
+{
+  "name": "krule",
+  "version": "0.0.0",
+  "private": true,
+  "description": "krule CLI - discover, verify and report on a system's business logic",
+  "bin": { "krule": "./src/main.ts" },
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "check-types": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo/discover": "workspace:*",
+    "@repo/kontract": "workspace:*",
+    "@repo/llm": "workspace:*",
+    "@repo/report": "workspace:*",
+    "@repo/verify": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.13.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.7"
+  }
+}
