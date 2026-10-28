@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { discoverModule } from "@repo/discover";
 import {
@@ -293,6 +293,12 @@ async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const resolvedModule = resolve(args.modulePath);
   const withResolved: Args = { ...args, modulePath: resolvedModule };
+
+  // Commands that create the kontract would otherwise fail with ENOENT when
+  // --out names a directory that does not exist yet.
+  if (["discover", "demo", "audit"].includes(args.command)) {
+    await mkdir(args.out, { recursive: true });
+  }
 
   switch (args.command) {
     case "discover":
