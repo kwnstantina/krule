@@ -16,11 +16,13 @@
     "check-types": "tsc -p tsconfig.test.json",
     "test": "vitest run",
     "generate-key": "tsx scripts/generate-key.ts",
+    "generate-ops-events": "tsx scripts/generate-ops-events.ts",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@repo/kontract": "workspace:*",
     "@repo/llm": "workspace:*",
+    "@repo/observe": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
-import { basename, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { discoverModule } from "@repo/discover";
 import {
   readKontractFile,
@@ -10,9 +10,17 @@ import {
 import { createProvider, describeProvider } from "@repo/llm";
 import {
   answerKeyPath,
+  opsEventsPath,
+  OPS_REFERENCE_HYPOTHESES,
   renderScoreReport,
   scoreKontractAgainstKey,
 } from "@repo/benchmark";
+import {
+  observeLog,
+  parseEventLog,
+  renderObservations,
+  type PolicyDocument,
+} from "@repo/observe";
 import { renderReport } from "@repo/report";
 import { toStatusMap, verifyDocument } from "@repo/verify";
 import { DEMO_BANNER, loadAnswerKeyKontract } from "./demo";
@@ -21,17 +29,24 @@ import { access, readFile } from "node:fs/promises";
 
 const KONTRACT_FILE = "rules.kontract.yaml";
 const REPORT_FILE = "audit-report.html";
+const OBSERVATIONS_FILE = "observations.json";
+const PROFILE_FILE = "log-profile.md";
 
 interface Args {
   command: string;
   modulePath: string;
   out: string;
   flags: Set<string>;
+  /** Positional args after the command (observe reads its log path here). */
+  rest: string[];
+  /** `--policy <file>`, repeatable. */
+  policies: string[];
 }
 
 function parseArgs(argv: string[]): Args {
   const positional: string[] = [];
   const flags = new Set<string>();
+  const policies: string[] = [];
   let out = ".";
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -39,6 +54,10 @@ function parseArgs(argv: string[]): Args {
     if (value === undefined) continue;
     if (value === "--out" || value === "-o") {
       out = argv[index + 1] ?? ".";
+      index += 1;
+    } else if (value === "--policy") {
+      const path = argv[index + 1];
+      if (path !== undefined) policies.push(path);
       index += 1;
     } else if (value.startsWith("--")) {
       flags.add(value.slice(2));
@@ -52,6 +71,8 @@ function parseArgs(argv: string[]): Args {
     modulePath: positional[1] ?? "fixtures/legacy-claims",
     out,
     flags,
+    rest: positional.slice(1),
+    policies,
   };
 }
 
@@ -65,9 +86,18 @@ const HELP = `krule — business logic observability
   krule audit <module>      discover, verify, report and score in one pass
   krule demo <module>       Same pipeline with extraction simulated from the answer
                             key, for running without an API key
+  krule observe [log.csv] [--policy <file>]...
+                            Check an event log against policy documents and find
+                            unwritten rules. The model proposes hypotheses; every
+                            figure comes from a local query. Writes ${OBSERVATIONS_FILE}
+                            and ${PROFILE_FILE}. With no log, uses the
+                            legacy-claims-ops benchmark fixture.
 
 Options
   --out <dir>               Where to write artifacts (default: current directory)
+  --policy <file>           observe: a policy document to check (repeatable)
+  --reference               observe: use the benchmark's hand-written hypotheses
+                            instead of the model (offline, circular, like demo)
 
 Environment
   ANTHROPIC_API_KEY         Enables live extraction. Without it, krule replays a
@@ -246,6 +276,69 @@ async function commandScore(args: Args): Promise<void> {
   process.stdout.write(renderScoreReport(result));
 }
 
+async function commandObserve(args: Args): Promise<void> {
+  const fixture = args.rest.length === 0;
+  const logPath = fixture ? opsEventsPath() : resolve(args.rest[0]!);
+  const policyPaths = fixture && args.policies.length === 0
+    ? [join(dirname(logPath), "..", "policy", "claims-authority-policy.md")]
+    : args.policies.map((p) => resolve(p));
+  const reference = args.flags.has("reference");
+
+  const log = parseEventLog(await readFile(logPath, "utf8"));
+  const policies: PolicyDocument[] = await Promise.all(
+    policyPaths.map(async (path) => ({ name: basename(path), text: await readFile(path, "utf8") })),
+  );
+
+  const provider = reference ? undefined : createProvider();
+  process.stdout.write(
+    "  log       " + logPath + "\n" +
+      "  cases     " + String(log.cases.length) + ", events " + String(log.events.length) + "\n" +
+      "  policies  " + (policies.map((p) => p.name).join(", ") || "none") + "\n" +
+      "  proposer  " +
+      (provider === undefined ? "reference hypotheses (offline, circular)" : describeProvider(provider)) +
+      "\n",
+  );
+
+  let result;
+  try {
+    result = await observeLog({
+      log,
+      policies,
+      provider,
+      hypotheses: reference ? Object.values(OPS_REFERENCE_HYPOTHESES) : undefined,
+    });
+  } catch (error) {
+    if (provider?.name === "recorded") {
+      throw new Error(
+        "no recorded response for this log. Set ANTHROPIC_API_KEY for a live run, or pass --reference for the offline demo.\n" +
+          (error instanceof Error ? error.message : String(error)),
+      );
+    }
+    throw error;
+  }
+
+  await writeFile(join(args.out, PROFILE_FILE), result.profile, "utf8");
+  await writeFile(
+    join(args.out, OBSERVATIONS_FILE),
+    JSON.stringify({ log: logPath, policies: policyPaths, observations: result.observations }, null, 2) + "\n",
+    "utf8",
+  );
+
+  process.stdout.write(renderObservations(result.observations));
+  process.stdout.write(
+    "\n  tokens    in " + String(result.usage.inputTokens) + ", out " + String(result.usage.outputTokens) +
+      "\n  → " + join(args.out, OBSERVATIONS_FILE) +
+      "\n  → " + join(args.out, PROFILE_FILE) + "\n",
+  );
+  if (reference) {
+    process.stdout.write(
+      "\n  NOTE  --reference runs hand-written hypotheses, so this shows the query\n" +
+        "        engine, not the model. Drop the flag (with ANTHROPIC_API_KEY set)\n" +
+        "        for a real run.\n",
+    );
+  }
+}
+
 async function commandDemo(args: Args): Promise<void> {
   process.stdout.write(DEMO_BANNER + "\n");
 
@@ -282,7 +375,7 @@ async function main(): Promise<void> {
 
   // Commands that create the kontract would otherwise fail with ENOENT when
   // --out names a directory that does not exist yet.
-  if (["discover", "demo", "audit"].includes(args.command)) {
+  if (["discover", "demo", "audit", "observe"].includes(args.command)) {
     await mkdir(args.out, { recursive: true });
   }
 
@@ -301,6 +394,9 @@ async function main(): Promise<void> {
       break;
     case "demo":
       await commandDemo(withResolved);
+      break;
+    case "observe":
+      await commandObserve(args);
       break;
     case "audit":
       process.stdout.write("\ndiscover\n");

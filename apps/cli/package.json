@@ -16,6 +16,7 @@
     "@repo/discover": "workspace:*",
     "@repo/kontract": "workspace:*",
     "@repo/llm": "workspace:*",
+    "@repo/observe": "workspace:*",
     "@repo/report": "workspace:*",
     "@repo/verify": "workspace:*"
   },

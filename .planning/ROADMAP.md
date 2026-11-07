@@ -21,6 +21,7 @@ input/output equivalence proven by Verify rather than asserted.
 - [ ] **Phase 4: Verify** - Generated executable tests per rule, run against real code, status written back
 - [ ] **Phase 5: Audit & Drift** - `audit-report.html` with four sections, plus PR drift flagging in CI
 - [ ] **Phase 6: Runtime** - One rule family migrated to `@repo/core` with proven I/O equivalence
+- [ ] **Phase 7: Three-Layer Truth** - Policy documents and event logs alongside code; intended vs implemented vs actual (see `VISION.md`)
 
 ## Phase Details
 
@@ -90,6 +91,22 @@ Plans:
 - [ ] 06-01: Select one rule family from the fixture and translate it into `@repo/core` Rule format
 - [ ] 06-02: Equivalence harness — Verify-driven proof that the legacy code path and Runtime execution produce identical output across the generated test inputs
 
+### Phase 7: Three-Layer Truth
+**Goal**: `krule audit` reads policy documents and event logs alongside code, and reports each rule's intended / implemented / actual versions and the gaps between them — scored against `fixtures/legacy-claims-ops/PLANTED.md`.
+**Depends on**: Phase 2 (harness pattern), Phase 3 (Discover over code)
+**Plans**: 6 plans — detail in `phases/07-three-layer/07-00-OVERVIEW.md`
+
+Plans:
+- [x] 07-01: Ops fixture — policy document, generated event log, 12 planted findings across 8 gap types, figures pinned by tests
+- [ ] 07-02: Kontract v2 evidence — per-layer evidence (`clause`, `query`) and a per-rule `gap`, with a v1 migration path
+- [ ] 07-03: Policy reader — clause-level extraction, linked to code rules
+- [x] 07-04: Event-log reader — the model proposes hypotheses, deterministic queries produce every figure
+- [ ] 07-05: Gap scoring — gap type, per-layer evidence and figure accuracy; penalties for flagged control cases and invented breaches
+- [ ] 07-06: Three-column report — intended | implemented | actual, with the money or case figure per gap
+
+**Widens the brief:** `VISION.md` takes the product beyond legacy code to processes and
+data in any industry. Phases 1–6 are unchanged.
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -100,6 +117,7 @@ Plans:
 | 4. Verify | 0/3 | Not started | - |
 | 5. Audit & Drift | 0/3 | Not started | - |
 | 6. Runtime | 0/2 | Not started | - |
+| 7. Three-Layer Truth | 2/6 | In progress | - |
 
 ## Success Criteria Coverage
 

@@ -30,6 +30,16 @@ export type { ScoreResult, Match, Misdescription, ClassBreakdown } from "./score
 
 export { renderScoreReport } from "./report";
 
+export {
+  generateOpsEvents,
+  workingDaysBetween,
+  OPS_CLAIM_COUNT,
+  OPS_SEED,
+} from "./ops-generator";
+export { computeOpsFigures, parseOpsEvents } from "./ops-findings";
+export { OPS_REFERENCE_HYPOTHESES } from "./ops-reference";
+export type { OpsFigures, Row as OpsRow } from "./ops-findings";
+
 const PACKAGE_ROOT = join(__dirname, "..");
 
 /** Committed answer key for a benchmark module, e.g. `legacy-claims`. */
@@ -40,6 +50,19 @@ export function answerKeyPath(module: string): string {
 /** Checked-in judge verdict cache for a benchmark module. */
 export function verdictsPath(module: string): string {
   return join(PACKAGE_ROOT, "verdicts", `${module}.verdicts.json`);
+}
+
+/** Event log ("actual" layer) of the `legacy-claims-ops` fixture. */
+export function opsEventsPath(): string {
+  return join(
+    PACKAGE_ROOT,
+    "..",
+    "..",
+    "fixtures",
+    "legacy-claims-ops",
+    "events",
+    "claim-events.csv",
+  );
 }
 
 /** The whole scoring path in one call, for the CLI and for Phase 3. */
