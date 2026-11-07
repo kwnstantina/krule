@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { basename, join, resolve } from "node:path";
 import { discoverModule } from "@repo/discover";
 import {
   readKontractFile,
@@ -8,11 +8,16 @@ import {
   updateRuleStatuses,
 } from "@repo/kontract";
 import { createProvider, describeProvider } from "@repo/llm";
+import {
+  answerKeyPath,
+  renderScoreReport,
+  scoreKontractAgainstKey,
+} from "@repo/benchmark";
 import { renderReport } from "@repo/report";
 import { toStatusMap, verifyDocument } from "@repo/verify";
 import { DEMO_BANNER, loadAnswerKeyKontract } from "./demo";
-import { loadPlanted, scoreAgainstPlanted } from "./score";
-import { readFile } from "node:fs/promises";
+import { createJudge } from "./score";
+import { access, readFile } from "node:fs/promises";
 
 const KONTRACT_FILE = "rules.kontract.yaml";
 const REPORT_FILE = "audit-report.html";
@@ -55,7 +60,8 @@ const HELP = `krule — business logic observability
   krule discover <module>   Extract business rules into ${KONTRACT_FILE}
   krule verify <module>     Check each rule against its cited source, write statuses back
   krule report <module>     Render ${REPORT_FILE} from the kontract
-  krule score <module>      Score the kontract against the fixture's PLANTED.md answer key
+  krule score <module>      Score the kontract against the module's answer key
+                            (precision, recall, recall per classification)
   krule audit <module>      discover, verify, report and score in one pass
   krule demo <module>       Same pipeline with extraction simulated from the answer
                             key, for running without an API key
@@ -69,6 +75,10 @@ Environment
   KRULE_LLM                 anthropic | recorded | auto   (default: auto)
   KRULE_EFFORT              low | medium | high | xhigh | max   (default: high)
   KRULE_CACHE_DIR           Where recorded responses live (default: .krule-cache)
+  KRULE_JUDGE               claude | deterministic | auto   (default: auto —
+                            claude when ANTHROPIC_API_KEY is set)
+  KRULE_MODEL               extraction model (default: claude-opus-5-5)
+  KRULE_JUDGE_MODEL         scoring judge model (default: claude-sonnet-5-5)
 `;
 
 function bar(count: number, total: number, width = 24): string {
@@ -213,51 +223,27 @@ async function commandReport(args: Args): Promise<void> {
 }
 
 async function commandScore(args: Args): Promise<void> {
-  const document = await readKontractFile(join(args.out, KONTRACT_FILE));
-  const planted = await loadPlanted(join(args.modulePath, "PLANTED.md"));
-
-  if (planted.length === 0) {
+  const module = basename(args.modulePath);
+  const keyPath = answerKeyPath(module);
+  try {
+    await access(keyPath);
+  } catch {
     process.stdout.write(
-      "  no PLANTED.md answer key found under " +
-        args.modulePath +
-        " — scoring only works on the synthetic fixture\n",
+      "  no answer key for " +
+        module +
+        " (looked for " +
+        keyPath +
+        ") — scoring only works on benchmark fixtures\n",
     );
     return;
   }
 
-  const score = scoreAgainstPlanted(document, planted);
-  const percent = (score.recall * 100).toFixed(1);
-
-  process.stdout.write(
-    "  planted   " +
-      String(score.planted) +
-      "\n  extracted " +
-      String(score.extracted) +
-      "\n  matched   " +
-      String(score.matched) +
-      "\n  recall    " +
-      percent +
-      "%  " +
-      bar(score.matched, score.planted) +
-      "\n  threshold 80.0%  " +
-      (score.recall >= 0.8 ? "PASS" : "BELOW TARGET") +
-      "\n",
+  const result = await scoreKontractAgainstKey(
+    join(args.out, KONTRACT_FILE),
+    keyPath,
+    createJudge(module),
   );
-
-  if (score.missed.length > 0) {
-    process.stdout.write("\n  not found\n");
-    for (const rule of score.missed) {
-      process.stdout.write(
-        "    " +
-          rule.id +
-          "  [" +
-          rule.classification +
-          "]  " +
-          rule.statement.slice(0, 78) +
-          "\n",
-      );
-    }
-  }
+  process.stdout.write(renderScoreReport(result));
 }
 
 async function commandDemo(args: Args): Promise<void> {

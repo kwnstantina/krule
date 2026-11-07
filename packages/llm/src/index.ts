@@ -7,7 +7,12 @@ export type {
 } from "./types";
 export { EMPTY_USAGE } from "./types";
 
-export { DEFAULT_MODEL, DEFAULT_EFFORT, DEFAULT_CACHE_DIR } from "./constants";
+export {
+  DEFAULT_MODEL,
+  DEFAULT_EFFORT,
+  DEFAULT_CACHE_DIR,
+  DEFAULT_JUDGE_MODEL,
+} from "./constants";
 
 export { AnthropicProvider } from "./anthropic";
 export type { AnthropicProviderOptions } from "./anthropic";

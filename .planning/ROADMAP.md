@@ -16,7 +16,7 @@ input/output equivalence proven by Verify rather than asserted.
 ## Phases
 
 - [x] **Phase 1: Foundation** - Test runner, a correct `@repo/core` evaluator, and the `@repo/kontract` schema
-- [ ] **Phase 2: Benchmark** - Synthetic legacy fixture, ground-truth answer key, and the scoring harness
+- [x] **Phase 2: Benchmark** - Synthetic legacy fixture, ground-truth answer key, and the scoring harness
 - [ ] **Phase 3: Discover** - Provider-abstracted extraction that emits `rules.kontract.yaml` and clears 80%
 - [ ] **Phase 4: Verify** - Generated executable tests per rule, run against real code, status written back
 - [ ] **Phase 5: Audit & Drift** - `audit-report.html` with four sections, plus PR drift flagging in CI
@@ -46,7 +46,7 @@ read. Phase 6 cannot prove equivalence against an engine that mis-evaluates nest
 
 Plans:
 - [x] 02-01: Synthetic legacy fixture module — code + schema + seed data + deliberately stale docs, with planted dark logic (code-only rules), dead rules (doc-only), and at least one genuine contradiction
-- [ ] 02-02: Ground-truth answer key expressed in kontract form, plus the scoring harness (precision/recall against the key, reports the ≥80% figure)
+- [x] 02-02: Ground-truth answer key expressed in kontract form, plus the scoring harness (precision/recall against the key, reports the ≥80% figure)
 
 **Sequencing note:** this precedes Discover on purpose. An answer key written after seeing
 extractor output measures nothing.
@@ -95,7 +95,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-07-26 |
-| 2. Benchmark | 1/2 | In progress | - |
+| 2. Benchmark | 2/2 | Complete | 2026-11-07 |
 | 3. Discover | 0/3 | Not started | - |
 | 4. Verify | 0/3 | Not started | - |
 | 5. Audit & Drift | 0/3 | Not started | - |

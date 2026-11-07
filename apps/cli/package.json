@@ -3,13 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "description": "krule CLI - discover, verify and report on a system's business logic",
-  "bin": { "krule": "./src/main.ts" },
+  "bin": {
+    "krule": "./src/main.ts"
+  },
   "scripts": {
     "start": "tsx src/main.ts",
     "check-types": "tsc -p tsconfig.json",
     "test": "vitest run"
   },
   "dependencies": {
+    "@repo/benchmark": "workspace:*",
     "@repo/discover": "workspace:*",
     "@repo/kontract": "workspace:*",
     "@repo/llm": "workspace:*",

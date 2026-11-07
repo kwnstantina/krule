@@ -1,7 +1,7 @@
 /**
  * Extraction prompts.
  *
- * Written for `claude-opus-5`, which follows instructions closely and literally.
+ * Written for `claude-opus-5-5`, which follows instructions closely and literally.
  * That shapes them in two ways worth knowing before editing:
  *
  * - No emphasis inflation. "You MUST", "CRITICAL", "never forget" over-trigger

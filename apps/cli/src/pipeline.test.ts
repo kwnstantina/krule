@@ -8,7 +8,11 @@ import type { CompletionRequest, CompletionResult, LlmProvider } from "@repo/llm
 import { EMPTY_USAGE } from "@repo/llm";
 import { renderReport } from "@repo/report";
 import { toStatusMap, verifyDocument } from "@repo/verify";
-import { parsePlanted, scoreAgainstPlanted, similarity } from "./score";
+import {
+  answerKeyPath,
+  deterministicJudge,
+  scoreKontract,
+} from "@repo/benchmark";
 
 const FIXTURE = join(__dirname, "..", "..", "..", "fixtures", "legacy-claims");
 
@@ -226,43 +230,23 @@ describe("kontract round trip through the CLI's artifacts", () => {
   });
 });
 
-describe("scoring against PLANTED.md", () => {
-  it("parses all 30 planted rules out of the committed answer key", async () => {
-    const markdown = await readFile(join(FIXTURE, "PLANTED.md"), "utf8");
-    const planted = parsePlanted(markdown);
-    expect(planted).toHaveLength(30);
-    expect(planted[0]?.id).toBe("R-001");
-    expect(planted.some((rule) => rule.classification === "dark-logic")).toBe(
-      true,
-    );
-  });
-
-  it("weights shared numbers above shared words when matching statements", () => {
-    const planted = "A claim above 10000 requires senior handler sign-off.";
-    const sameThreshold = "Claims over 10000 need sign-off from a senior handler.";
-    const differentThreshold =
-      "Claims over 99999 need sign-off from a senior handler.";
-    expect(similarity(planted, sameThreshold)).toBeGreaterThan(
-      similarity(planted, differentThreshold),
-    );
-  });
-
-  it("counts a planted rule as found only when something matches it", async () => {
-    const markdown = await readFile(join(FIXTURE, "PLANTED.md"), "utf8");
-    const planted = parsePlanted(markdown);
+describe("scoring against the answer key", () => {
+  it("credits what the extraction found and reports the rest as missed", async () => {
     const { document } = await discoverModule({
       modulePath: FIXTURE,
       provider: new StubProvider(STUB_RULES),
       commit: "testcommit",
     });
+    const key = await readKontractFile(answerKeyPath("legacy-claims"));
 
-    const score = scoreAgainstPlanted(document, planted);
-    expect(score.planted).toBe(30);
+    const score = await scoreKontract(document, key, deterministicJudge);
+    expect(score.keyCount).toBe(30);
     // Three hand-written rules cannot cover thirty planted ones; the point is
     // that the scorer reports honestly rather than flattering the extractor.
-    expect(score.matched).toBeGreaterThan(0);
-    expect(score.matched).toBeLessThan(10);
-    expect(score.recall).toBeLessThan(0.8);
-    expect(score.missed.length).toBe(30 - score.matched);
+    expect(score.truePositives).toBeGreaterThan(0);
+    expect(score.truePositives).toBeLessThan(10);
+    expect(score.meetsThreshold).toBe(false);
+    expect(score.missed).toHaveLength(30 - score.truePositives);
+    expect(score.matches.map((match) => match.keyId)).toContain("R-004");
   });
 });

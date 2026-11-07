@@ -1,0 +1,33 @@
+{
+  "name": "@repo/benchmark",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Scores a rules.kontract.yaml against a written answer key - the yardstick for extraction quality",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "generate-key": "tsx scripts/generate-key.ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@repo/kontract": "workspace:*",
+    "@repo/llm": "workspace:*",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.13.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.7"
+  }
+}
