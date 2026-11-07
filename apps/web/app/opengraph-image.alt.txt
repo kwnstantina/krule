@@ -1,0 +1,1 @@
+krule: know what your legacy code actually decides.

@@ -1,5 +1,5 @@
 "use client";
-import React , { useState }from "react";
+import React, { useId, useState } from "react";
 import { Rule, Condition, ConditionGroup } from "@repo/core/evaluators";
 import styles from "./RuleForm.module.css";
 
@@ -9,6 +9,7 @@ interface RuleFormProps {
 }
 
 export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
+  const uid = useId();
   const [name, setName] = useState(initialRule?.name || "");
   const [priority, setPriority] = useState(initialRule?.priority || 0);
   const [conditions, setConditions] = useState<(Condition | ConditionGroup)[]>(
@@ -39,7 +40,7 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
     }
   ];
 
-  const loadExample = (example: any) => {
+  const loadExample = (example: (typeof exampleRules)[number]) => {
     setName(example.name);
     setPriority(example.priority);
     setConditions(example.conditions);
@@ -49,12 +50,12 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
   const addCondition = () => {
     setConditions(prev => [...prev, {
       field: "",
-      operator: "==" as any,
+      operator: "==" as const,
       value: ""
     }]);
   };
 
-  const updateCondition = (index: number, field: keyof Condition, value: any) => {
+  const updateCondition = (index: number, field: keyof Condition, value: Condition[keyof Condition]) => {
     setConditions(prev => prev.map((cond, i) => 
       i === index ? { ...cond, [field]: value } : cond
     ));
@@ -72,7 +73,7 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
     }]);
   };
 
-  const updateAction = (index: number, field: string, value: any) => {
+  const updateAction = (index: number, field: "type" | "target" | "payload", value: string) => {
     setActions(prev => prev.map((action, i) => 
       i === index ? { ...action, [field]: value } : action
     ));
@@ -105,84 +106,85 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
   };
 
   return (
-    <div>
-      <div className={styles.exampleRules}>
-        <h4 className={styles.exampleTitle}>
-          Quick Start Examples
-        </h4>
-        <div className={styles.exampleGrid}>
-          {exampleRules.map((example, index) => (
-            <div
-              key={index}
-              className={styles.exampleCard}
+    <section className={styles.panel} aria-labelledby={`${uid}-title`}>
+      <div className={styles.panelHead}>
+        <h2 id={`${uid}-title`} className="k-h3">
+          New rule
+        </h2>
+        <div className={styles.templates}>
+          <span className={styles.templatesLabel}>Start from</span>
+          {exampleRules.map((example) => (
+            <button
+              key={example.name}
+              type="button"
+              className={styles.template}
               onClick={() => loadExample(example)}
+              title={`${example.conditions.length} condition${example.conditions.length !== 1 ? "s" : ""}, ${example.actions.length} action${example.actions.length !== 1 ? "s" : ""}`}
             >
-              <h5 className={styles.exampleCardTitle}>{example.name}</h5>
-              <p className={styles.exampleCardDesc}>
-                {example.conditions.length} condition{example.conditions.length !== 1 ? 's' : ''}, {example.actions.length} action{example.actions.length !== 1 ? 's' : ''}
-              </p>
-            </div>
+              {example.name}
+            </button>
           ))}
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className={styles.formContainer}>
-        <h3 className={styles.formTitle}>
-          Create New Rule
-        </h3>
-        
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGrid}>
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>
-              Rule Name:
+          <div>
+            <label className="k-label" htmlFor={`${uid}-name`}>
+              Name
             </label>
             <input
+              id={`${uid}-name`}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter a descriptive rule name"
-              className={styles.input}
+              placeholder="e.g. Premium user discount"
+              className="k-input"
               required
             />
           </div>
-          
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>
-              Priority (higher = first):
+          <div>
+            <label className="k-label" htmlFor={`${uid}-priority`}>
+              Priority
             </label>
             <input
+              id={`${uid}-priority`}
               type="number"
               value={priority}
               onChange={(e) => setPriority(Number(e.target.value))}
               placeholder="0"
-              className={styles.input}
+              className="k-input k-input--mono"
             />
           </div>
         </div>
 
-        <div className={styles.section}>
+        <div className={styles.section} role="group" aria-labelledby={`${uid}-if`}>
           <div className={styles.sectionHeader}>
-            <h4 className={styles.sectionTitle}>
-              Conditions
-            </h4>
-            <button type="button" onClick={addCondition} className={styles.addButton}>
-              Add Condition
+            <h3 id={`${uid}-if`} className={styles.sectionTitle}>
+              <span className={styles.keyword}>If</span> all of these hold
+            </h3>
+            <button type="button" onClick={addCondition} className="k-btn k-btn--ghost k-btn--sm">
+              + Condition
             </button>
           </div>
-          
+
+          {conditions.length === 0 && <p className={styles.hint}>No conditions yet. Add at least one.</p>}
+
           {conditions.map((condition, index) => (
             <div key={index} className={styles.itemGrid}>
               <input
                 type="text"
-                placeholder="Field name (e.g. userType, age)"
+                aria-label={`Condition ${index + 1} field`}
+                placeholder="field, e.g. userType"
                 value={(condition as Condition).field || ""}
                 onChange={(e) => updateCondition(index, "field", e.target.value)}
-                className={styles.input}
+                className="k-input k-input--mono"
               />
               <select
+                aria-label={`Condition ${index + 1} operator`}
                 value={(condition as Condition).operator || "=="}
                 onChange={(e) => updateCondition(index, "operator", e.target.value)}
-                className={styles.select}
+                className={`k-input k-input--mono ${styles.select}`}
               >
                 {operators.map(op => (
                   <option key={op} value={op}>{op}</option>
@@ -190,10 +192,11 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
               </select>
               <input
                 type="text"
-                placeholder="Value (e.g. premium, 25, true)"
+                aria-label={`Condition ${index + 1} value`}
+                placeholder="value, e.g. premium or 25"
                 value={(condition as Condition).value || ""}
                 onChange={(e) => {
-                  let value: any = e.target.value;
+                  let value: string | number | boolean = e.target.value;
                   // Try to parse as number or boolean
                   if (!isNaN(Number(value)) && value !== "") {
                     value = Number(value);
@@ -202,73 +205,85 @@ export default function RuleForm({ onSave, initialRule }: RuleFormProps) {
                   }
                   updateCondition(index, "value", value);
                 }}
-                className={styles.input}
+                className="k-input k-input--mono"
               />
               <button
                 type="button"
                 onClick={() => removeCondition(index)}
                 className={styles.removeButton}
-                title="Remove condition"
+                aria-label={`Remove condition ${index + 1}`}
               >
-                ✕
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
               </button>
             </div>
           ))}
         </div>
 
-        <div className={styles.section}>
+        <div className={styles.section} role="group" aria-labelledby={`${uid}-then`}>
           <div className={styles.sectionHeader}>
-            <h4 className={styles.sectionTitle}>
-              ⚡ Actions
-            </h4>
-            <button type="button" onClick={addAction} className={`${styles.addButton}`} style={{background: "linear-gradient(135deg, #38b2ac 0%, #319795 100%)"}}>
-              + Add Action
+            <h3 id={`${uid}-then`} className={styles.sectionTitle}>
+              <span className={styles.keyword}>Then</span> do this
+            </h3>
+            <button type="button" onClick={addAction} className="k-btn k-btn--ghost k-btn--sm">
+              + Action
             </button>
           </div>
-          
+
+          {actions.length === 0 && <p className={styles.hint}>No actions yet. Add at least one.</p>}
+
           {actions.map((action, index) => (
             <div key={index} className={styles.itemGrid}>
               <input
                 type="text"
-                placeholder="Action type (e.g. discount, flag)"
+                aria-label={`Action ${index + 1} type`}
+                placeholder="type, e.g. discount"
                 value={action.type}
                 onChange={(e) => updateAction(index, "type", e.target.value)}
-                className={styles.input}
+                className="k-input k-input--mono"
               />
               <input
                 type="text"
-                placeholder="Target (e.g. cart, user)"
+                aria-label={`Action ${index + 1} target`}
+                placeholder="target, e.g. cart"
                 value={action.target}
                 onChange={(e) => updateAction(index, "target", e.target.value)}
-                className={styles.input}
+                className="k-input k-input--mono"
               />
               <input
                 type="text"
-                placeholder="Payload (e.g. {amount: 10})"
+                aria-label={`Action ${index + 1} payload`}
+                placeholder="payload, e.g. 15%"
                 value={action.payload || ""}
                 onChange={(e) => updateAction(index, "payload", e.target.value)}
-                className={styles.input}
+                className="k-input k-input--mono"
               />
               <button
                 type="button"
                 onClick={() => removeAction(index)}
                 className={styles.removeButton}
-                title="Remove action"
+                aria-label={`Remove action ${index + 1}`}
               >
-                ✕
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
               </button>
             </div>
           ))}
         </div>
 
-        <button
-          type="submit"
-          disabled={!name || conditions.length === 0 || actions.length === 0}
-          className={styles.submitButton}
-        >
-          💾 Save Rule
-        </button>
+        <div className={styles.footer}>
+          <p className={styles.hint}>A rule needs a name, a condition and an action.</p>
+          <button
+            type="submit"
+            disabled={!name || conditions.length === 0 || actions.length === 0}
+            className="k-btn k-btn--primary"
+          >
+            Save rule
+          </button>
+        </div>
       </form>
-    </div>
+    </section>
   );
 }

@@ -57,6 +57,7 @@ export default function ChatInput({
           placeholder={placeholder}
           disabled={disabled}
           className={styles.textarea}
+          aria-label="Describe a rule"
           rows={1}
         />
 
@@ -66,27 +67,14 @@ export default function ChatInput({
           className={styles.sendButton}
           aria-label="Send message"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M2 10L18 2L10 18L8 11L2 10Z"
-              fill="currentColor"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
 
       <div className={styles.hint}>
-        Press <kbd>Enter</kbd> to send, <kbd>Shift + Enter</kbd> for new line
+        <kbd>Enter</kbd> to send · <kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line
       </div>
     </div>
   );

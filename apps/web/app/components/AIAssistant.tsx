@@ -21,22 +21,30 @@ interface Message {
   rule?: Rule;
 }
 
+const QUICK_PROMPTS = [
+  { label: "Content moderation", prompt: "Create a content moderation rule" },
+  { label: "Access control", prompt: "Create a user access control rule" },
+  { label: "Discount", prompt: "Create an e-commerce discount rule" },
+];
+
 export default function AIAssistant({ onRuleGenerated, userId }: AIAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "system",
-      content: "👋 Welcome to the AI Rule Generator! Describe the rule you want to create in plain English, and I'll generate it for you.",
+      content: "Describe a rule in plain language and I'll draft it as an executable rule you can review, refine and add to your list.",
       timestamp: new Date(),
     },
   ]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [currentRule, setCurrentRule] = useState<Rule | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Scroll the message list, not the page, so opening the tab doesn't jump.
+    const list = messagesRef.current;
+    if (list) list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -114,7 +122,7 @@ export default function AIAssistant({ onRuleGenerated, userId }: AIAssistantProp
       const confirmMessage: Message = {
         id: Date.now().toString(),
         role: "assistant",
-        content: "✓ Rule accepted! The rule has been added to your rule list. You can find it in the Builder tab.",
+        content: "Rule added to your list. You'll find it in the Build tab.",
         timestamp: new Date(),
       };
 
@@ -175,7 +183,7 @@ export default function AIAssistant({ onRuleGenerated, userId }: AIAssistantProp
       {
         id: "welcome-" + Date.now(),
         role: "system",
-        content: "New conversation started! What rule would you like to create?",
+        content: "New conversation. What rule would you like to create?",
         timestamp: new Date(),
       },
     ]);
@@ -183,26 +191,24 @@ export default function AIAssistant({ onRuleGenerated, userId }: AIAssistantProp
   };
 
   return (
-    <div className={styles.container}>
-      {/* Header */}
+    <section className={styles.container} aria-labelledby="ai-title">
       <div className={styles.header}>
-        <div className={styles.headerContent}>
-          <h3 className={styles.title}>🤖 AI Rule Assistant</h3>
-          <p className={styles.subtitle}>
-            Describe your rule in plain language, and I'll generate it for you
-          </p>
+        <div>
+          <h2 id="ai-title" className="k-h3">
+            AI assistant
+          </h2>
+          <p className="k-muted">Drafts a rule from your description. Review every rule before you add it.</p>
         </div>
         <button
+          type="button"
           onClick={handleNewConversation}
-          className={styles.newChatButton}
-          title="Start new conversation"
+          className="k-btn k-btn--ghost k-btn--sm"
         >
-          ✨ New Chat
+          New conversation
         </button>
       </div>
 
-      {/* Messages */}
-      <div className={styles.messages}>
+      <div ref={messagesRef} className={styles.messages} aria-live="polite">
         {messages.map((message) => (
           <React.Fragment key={message.id}>
             <ChatMessage
@@ -222,43 +228,29 @@ export default function AIAssistant({ onRuleGenerated, userId }: AIAssistantProp
         ))}
 
         {isStreaming && <StreamingIndicator />}
-
-        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className={styles.inputContainer}>
+      <div className={styles.composer}>
+        <div className={styles.quickActions}>
+          <span className={styles.quickLabel}>Try</span>
+          {QUICK_PROMPTS.map(({ label, prompt }) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => handleSendMessage(prompt)}
+              className={styles.quickAction}
+              disabled={isStreaming}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <ChatInput
           onSend={handleSendMessage}
           disabled={isStreaming}
-          placeholder="E.g., 'Give VIP users 20% off when their cart is over $100'"
+          placeholder="e.g. Give VIP users 20% off when their cart is over $100"
         />
       </div>
-
-      {/* Quick Actions */}
-      <div className={styles.quickActions}>
-        <button
-          onClick={() => handleSendMessage("Create a content moderation rule")}
-          className={styles.quickAction}
-          disabled={isStreaming}
-        >
-          📝 Content Moderation
-        </button>
-        <button
-          onClick={() => handleSendMessage("Create a user access control rule")}
-          className={styles.quickAction}
-          disabled={isStreaming}
-        >
-          🔐 Access Control
-        </button>
-        <button
-          onClick={() => handleSendMessage("Create an e-commerce discount rule")}
-          className={styles.quickAction}
-          disabled={isStreaming}
-        >
-          💰 Discount Rule
-        </button>
-      </div>
-    </div>
+    </section>
   );
 }

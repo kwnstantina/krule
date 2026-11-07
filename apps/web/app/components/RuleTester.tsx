@@ -1,6 +1,6 @@
 "use client";
 
-import React , { useState }from "react";
+import React, { useState } from "react";
 import { Rule, executeRules } from "@repo/core/evaluators";
 import styles from "./RuleTester.module.css";
 
@@ -17,7 +17,7 @@ export default function RuleTester({ rules }: RuleTesterProps) {
   "reportCount": 0,
   "verified": true
 }`);
-  const [results, setResults] = useState<Map<string, any> | null>(null);
+  const [results, setResults] = useState<ReturnType<typeof executeRules> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,138 +83,119 @@ export default function RuleTester({ rules }: RuleTesterProps) {
   ];
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>
-        🧪 Test Your Rules
-      </h3>
-      
+    <section className={styles.container} aria-labelledby="tester-title">
+      <div className={styles.head}>
+        <h2 id="tester-title" className="k-h3">
+          Test against sample data
+        </h2>
+        <p className="k-muted">
+          Rules run in priority order against the JSON context. Results show the final action for each target.
+        </p>
+      </div>
+
       {rules.length === 0 ? (
         <div className={styles.emptyState}>
-          <div className={styles.emptyStateIcon}>📝</div>
-          <h4 style={{ margin: "0 0 0.5rem 0", color: "#4a5568" }}>No rules to test</h4>
-          <p  className={styles.paragraph}>
-            Create some rules first in the Rule Builder tab, or load example rules to get started.
-          </p>
+          <p className={styles.emptyTitle}>No rules to test</p>
+          <p className="k-muted">Create rules in the Build tab, or load the examples there.</p>
         </div>
       ) : (
         <div className={styles.testGrid}>
-          <div className={styles.inputSection}>
-            <h4 className={styles.sectionTitle}>
-              📝 Test Data (JSON)
-            </h4>
+          <div className={styles.panel}>
+            <div className={styles.panelHead}>
+              <label htmlFor="tester-context" className={styles.panelTitle}>
+                Context <span className={styles.panelMeta}>JSON</span>
+              </label>
+            </div>
             <textarea
+              id="tester-context"
               value={testData}
               onChange={(e) => setTestData(e.target.value)}
-              className={styles.textarea}
+              className={`k-input k-input--mono ${styles.textarea}`}
               placeholder="Enter test data as JSON..."
+              spellCheck={false}
             />
-            
-            <div className={styles.examplesSection}>
-              <h5 className={styles.sectionTitle} style={{ fontSize: "1rem" }}>
-                💡 Example Scenarios
-              </h5>
-              <div className={styles.exampleButtons}>
-                {exampleScenarios.map((scenario, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setTestData(JSON.stringify(scenario.data, null, 2))}
-                    className={styles.exampleButton}
-                  >
-                    {scenario.name}
-                  </button>
-                ))}
-              </div>
+
+            <div className={styles.scenarios}>
+              <span className={styles.scenariosLabel}>Scenarios</span>
+              {exampleScenarios.map((scenario) => (
+                <button
+                  key={scenario.name}
+                  type="button"
+                  onClick={() => setTestData(JSON.stringify(scenario.data, null, 2))}
+                  className={styles.scenario}
+                >
+                  {scenario.name}
+                </button>
+              ))}
             </div>
-            
-            <button
-              onClick={runTest}
-              disabled={isLoading}
-              className={styles.runButton}
-            >
-              {isLoading ? "🔄 Running..." : "🚀 Run Test"}
+
+            <button type="button" onClick={runTest} disabled={isLoading} className="k-btn k-btn--primary">
+              {isLoading ? "Running…" : "Run rules"}
             </button>
           </div>
-          
-          <div className={styles.resultsSection}>
-            <h4 className={styles.sectionTitle}>
-              📊 Test Results
-            </h4>
-            
-            {error && (
-              <div className={styles.errorMessage}>
-                <strong>❌ Error:</strong> {error}
-              </div>
-            )}
-            
-            <div className={styles.resultsContainer}>
-              {results && (
-                <>
-                  {results.size === 0 ? (
-                    <div className={styles.noResults}>
-                      <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🤷‍♂️</div>
-                      <div>No rules were triggered by the test data.</div>
-                      <div style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
-                        Try adjusting your test data or rule conditions.
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className={styles.resultsHeader}>
-                        ✅ {results.size} action(s) triggered
-                      </div>
-                      <div className={styles.resultsContent}>
-                        {Array.from(results.entries()).map(([target, action], index) => (
-                          <div key={index} className={styles.resultItem}>
-                            <div className={styles.resultTarget}>
-                              🎯 Target: {target}
-                            </div>
-                            <div className={styles.resultDetails}>
-                              <div className={styles.resultDetail}>
-                                <span className={styles.resultDetailLabel}>Type:</span> {action.type}
-                              </div>
-                              {action.payload && (
-                                <div className={styles.resultDetail}>
-                                  <span className={styles.resultDetailLabel}>Payload:</span> {JSON.stringify(action.payload)}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHead}>
+              <h3 className={styles.panelTitle}>Result</h3>
+              {results && results.size > 0 && (
+                <span className={styles.resultCount}>
+                  {results.size} target{results.size !== 1 ? "s" : ""} affected
+                </span>
               )}
-              
+            </div>
+
+            <div className={styles.results} aria-live="polite">
+              {error && (
+                <div className={styles.errorMessage} role="alert">
+                  <strong>Could not run.</strong> {error}
+                </div>
+              )}
+
+              {results && results.size === 0 && (
+                <div className={styles.placeholder}>
+                  <p>No rule matched this context.</p>
+                  <p className={styles.placeholderSub}>Adjust the data or the rule conditions.</p>
+                </div>
+              )}
+
+              {results && results.size > 0 && (
+                <ul className={styles.resultList}>
+                  {Array.from(results.entries()).map(([target, action]) => (
+                    <li key={target} className={styles.resultItem}>
+                      <code className={styles.resultTarget}>{target}</code>
+                      <span className={styles.resultType}>{action.type}</span>
+                      {action.payload !== undefined && action.payload !== "" && (
+                        <code className={styles.resultPayload}>{JSON.stringify(action.payload)}</code>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
               {!results && !error && (
-                <div className={styles.noResults}>
-                  <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚡</div>
-                  <div>Ready to test your rules</div>
-                  <div style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
-                    Enter test data and click "Run Test" to see results
-                  </div>
+                <div className={styles.placeholder}>
+                  <p>Ready when you are.</p>
+                  <p className={styles.placeholderSub}>Edit the context and run the rules.</p>
                 </div>
               )}
             </div>
-            
-            <div className={styles.activeRulesSection}>
-              <h5 className={styles.sectionTitle} style={{ fontSize: "1rem" }}>
-                📋 Active Rules ({rules.length})
-              </h5>
-              <div className={styles.activeRulesList}>
+
+            <div className={styles.activeRules}>
+              <h4 className={styles.activeRulesTitle}>Rules in play ({rules.length})</h4>
+              <ul className={styles.activeRulesList}>
                 {rules.map((rule, index) => (
-                  <div key={rule.id || index} className={styles.activeRuleItem}>
-                    <div className={styles.activeRuleName}>{rule.name}</div>
-                    <div className={styles.activeRuleMeta}>
-                      Priority: {rule.priority} | Conditions: {rule.condition.conditions.length} | Actions: {rule.actions.length}
-                    </div>
-                  </div>
+                  <li key={rule.id || index}>
+                    <span className={styles.activeRuleName}>{rule.name || "Unnamed rule"}</span>
+                    <span className={styles.activeRuleMeta}>
+                      priority {rule.priority}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -78,6 +78,12 @@ module.exports = { rules, evaluateRules };`;
     URL.revokeObjectURL(url);
   };
 
+  const formats: { key: typeof exportFormat; label: string }[] = [
+    { key: "json", label: "JSON" },
+    { key: "typescript", label: "TypeScript" },
+    { key: "javascript", label: "JavaScript" },
+  ];
+
   const useCases = [
     {
       title: "E-commerce Pricing & Promotions",
@@ -136,105 +142,79 @@ module.exports = { rules, evaluateRules };`;
   ];
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>
-        📤 Export Rules & Use Cases
-      </h3>
-      
+    <section className={styles.container} aria-labelledby="exporter-title">
+      <div className={styles.head}>
+        <h2 id="exporter-title" className="k-h3">
+          Export
+        </h2>
+        <p className="k-muted">Take your rules into your own codebase as data or as ready-to-run code.</p>
+      </div>
+
       <div className={styles.exportGrid}>
-        <div className={styles.exportSection}>
-          <h4 className={styles.sectionTitle}>
-            🔧 Export Your Rules
-          </h4>
-          
-          <div className={styles.formatSection}>
-            <label className={styles.label}>
-              Export Format:
-            </label>
-            <select
-              value={exportFormat}
-              onChange={(e) => setExportFormat(e.target.value as any)}
-              className={styles.select}
-            >
-              <option value="json">JSON (Data)</option>
-              <option value="typescript">TypeScript (Code)</option>
-              <option value="javascript">JavaScript (Code)</option>
-            </select>
-          </div>
-          
-          <div className={styles.buttonGroup}>
-            <button
-              onClick={copyToClipboard}
-              disabled={rules.length === 0}
-              className={`${styles.exportButton} ${styles.copyButton} ${copied ? styles.copyButtonSuccess : ""}`}
-            >
-              {copied ? "✅ Copied!" : "📋 Copy"}
-            </button>
-            <button
-              onClick={downloadExport}
-              disabled={rules.length === 0}
-              className={`${styles.exportButton} ${styles.downloadButton}`}
-            >
-              💾 Download
-            </button>
-          </div>
-          
-          {rules.length === 0 && (
-            <p className={styles.disabledMessage}>
-              Create some rules first to enable export functionality.
-            </p>
-          )}
-          
-          <div className={styles.previewSection}>
-            <h5 className={styles.sectionTitle} style={{ fontSize: "1rem" }}>
-              👀 Preview
-            </h5>
-            <pre className={styles.codePreview}>
-              {rules.length > 0 ? generateExport() : "// No rules to export\\n// Create some rules first"}
-            </pre>
-          </div>
-        </div>
-        
-        <div className={styles.useCasesSection}>
-          <h4 className={styles.sectionTitle}>
-            💡 Use Case Examples
-          </h4>
-          
-          {useCases.map((useCase, index) => (
-            <div key={index} className={styles.useCaseCard}>
-              <h5 className={styles.useCaseTitle}>
-                {useCase.title}
-              </h5>
-              <p className={styles.useCaseDesc}>
-                {useCase.description}
-              </p>
-              
-              <details className={styles.useCaseExample}>
-                <summary>
-                  📝 View Example Rule
-                </summary>
-                <pre>
-                  {JSON.stringify(useCase.example, null, 2)}
-                </pre>
-              </details>
+        <div className={styles.panel}>
+          <div className={styles.toolbar}>
+            <div className={styles.formats} role="radiogroup" aria-label="Export format">
+              {formats.map((format) => (
+                <button
+                  key={format.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={exportFormat === format.key}
+                  className={styles.format}
+                  onClick={() => setExportFormat(format.key)}
+                >
+                  {format.label}
+                </button>
+              ))}
             </div>
+            <div className={styles.buttonGroup}>
+              <button
+                type="button"
+                onClick={copyToClipboard}
+                disabled={rules.length === 0}
+                className="k-btn k-btn--ghost k-btn--sm"
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+              <button
+                type="button"
+                onClick={downloadExport}
+                disabled={rules.length === 0}
+                className="k-btn k-btn--primary k-btn--sm"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+
+          <pre className={`k-code ${styles.codePreview}`}>
+            {rules.length > 0 ? generateExport() : "// No rules to export yet.\n// Create some in the Build tab first."}
+          </pre>
+        </div>
+
+        <aside className={styles.useCases}>
+          <h3 className={styles.asideTitle}>Example rules by domain</h3>
+          {useCases.map((useCase) => (
+            <details key={useCase.title} className={styles.useCaseCard}>
+              <summary>
+                <span className={styles.useCaseTitle}>{useCase.title}</span>
+                <span className={styles.useCaseDesc}>{useCase.description}</span>
+              </summary>
+              <pre className="k-code">{JSON.stringify(useCase.example, null, 2)}</pre>
+            </details>
           ))}
-          
-          <div className={styles.integrationTips}>
-            <h5 className={styles.integrationTitle}>
-              💡 Integration Tips
-            </h5>
-            <ul className={styles.integrationList}>
-              <li>Import rules from JSON for dynamic rule loading</li>
-              <li>Use TypeScript exports for type safety in your apps</li>
-              <li>Store rules in databases for multi-tenant applications</li>
-              <li>Combine with React hooks for real-time rule evaluation</li>
-              <li>Cache rule evaluation results for better performance</li>
-              <li>Version your rules for rollback and change tracking</li>
+
+          <div className={styles.tips}>
+            <h3 className={styles.asideTitle}>Integration notes</h3>
+            <ul className={styles.tipList}>
+              <li>Load rules from JSON at runtime to change behaviour without a deploy.</li>
+              <li>Use the TypeScript export for type checking against the engine.</li>
+              <li>Version rule files alongside code so every change is reviewable.</li>
+              <li>Store rules per tenant in a database for multi-tenant products.</li>
             </ul>
           </div>
-        </div>
+        </aside>
       </div>
-    </div>
+    </section>
   );
 }

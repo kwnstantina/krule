@@ -10,36 +10,19 @@ export interface ChatMessageProps {
 }
 
 export default function ChatMessage({ role, content, timestamp }: ChatMessageProps) {
-  const isUser = role === "user";
-  const isSystem = role === "system";
+  const author = role === "user" ? "You" : "krule";
 
   return (
-    <div className={`${styles.message} ${isUser ? styles.user : styles.assistant}`}>
-      {!isUser && !isSystem && (
-        <div className={styles.avatar}>
-          <span className={styles.avatarIcon}>🤖</span>
-        </div>
-      )}
-
-      <div className={styles.content}>
-        {isSystem && (
-          <div className={styles.systemBadge}>System</div>
-        )}
-        <div className={styles.text}>
-          {content}
-        </div>
+    <div className={`${styles.message} ${styles[role]}`}>
+      <div className={styles.meta}>
+        <span className={styles.author}>{author}</span>
         {timestamp && (
-          <div className={styles.timestamp}>
-            {new Date(timestamp).toLocaleTimeString()}
-          </div>
+          <time className={styles.timestamp} dateTime={new Date(timestamp).toISOString()}>
+            {new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </time>
         )}
       </div>
-
-      {isUser && (
-        <div className={`${styles.avatar} ${styles.avatarUser}`}>
-          <span className={styles.avatarIcon}>👤</span>
-        </div>
-      )}
+      <div className={styles.text}>{content}</div>
     </div>
   );
 }

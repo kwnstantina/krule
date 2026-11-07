@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Logic Audit — legacy-claims</title>
+<style>
+:root {
+  --paper: #e9edf1;
+  --card: #f7f9fa;
+  --ink: #131c26;
+  --ink-soft: #47566a;
+  --ink-faint: #7b8798;
+  --rule: #ccd6e0;
+  --rule-firm: #a9b7c6;
+  --structure: #3d4e6b;
+
+  --verified: #0f6b5c;
+  --verified-wash: #dfeeea;
+  --unverified: #64748b;
+  --unverified-wash: #e6eaee;
+  --contradicted: #a3243b;
+  --contradicted-wash: #f5e2e5;
+  --drifted: #8a5a0b;
+  --drifted-wash: #f5eadb;
+
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas, "SF Mono", Menlo, "DejaVu Sans Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #101821;
+    --card: #17202b;
+    --ink: #e7edf3;
+    --ink-soft: #a7b5c4;
+    --ink-faint: #78889a;
+    --rule: #2a3745;
+    --rule-firm: #3d4d5e;
+    --structure: #8da4c6;
+
+    --verified: #4fbfa5;
+    --verified-wash: #12302b;
+    --unverified: #8798ab;
+    --unverified-wash: #1d2732;
+    --contradicted: #f0798f;
+    --contradicted-wash: #331820;
+    --drifted: #d9a44a;
+    --drifted-wash: #2e2415;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #101821;
+  --card: #17202b;
+  --ink: #e7edf3;
+  --ink-soft: #a7b5c4;
+  --ink-faint: #78889a;
+  --rule: #2a3745;
+  --rule-firm: #3d4d5e;
+  --structure: #8da4c6;
+
+  --verified: #4fbfa5;
+  --verified-wash: #12302b;
+  --unverified: #8798ab;
+  --unverified-wash: #1d2732;
+  --contradicted: #f0798f;
+  --contradicted-wash: #331820;
+  --drifted: #d9a44a;
+  --drifted-wash: #2e2415;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 6rem;
+}
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 0.75rem;
+}
+
+h1 {
+  font-family: var(--sans);
+  font-size: clamp(1.9rem, 5vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin: 0 0 0.85rem;
+}
+
+h1 .module {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 0.5em;
+  letter-spacing: 0;
+  color: var(--structure);
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.provenance-line {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0;
+}
+
+.provenance-line span { white-space: nowrap; }
+.provenance-line b { font-weight: 600; color: var(--ink); }
+
+/* ---------- tally ---------- */
+
+.tally {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin: 2rem 0 3rem;
+}
+
+.tally-cell {
+  background: var(--card);
+  padding: 0.9rem 1rem;
+  border-top: 3px solid var(--tone, var(--rule-firm));
+}
+
+.tally-count {
+  font-family: var(--mono);
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--tone, var(--ink));
+  font-variant-numeric: tabular-nums;
+}
+
+.tally-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.45rem;
+}
+
+/* ---------- sections ---------- */
+
+section { margin-bottom: 3.5rem; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  border-bottom: 1px solid var(--rule-firm);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.section-numeral {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--structure);
+  letter-spacing: 0.06em;
+}
+
+h2 {
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  flex: 1;
+}
+
+.section-count {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-note {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  margin: 0.7rem 0 1.4rem;
+  max-width: 46rem;
+}
+
+/* ---------- the verdict spine ---------- */
+
+.rule {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr;
+  gap: 0 1.1rem;
+  padding: 1rem 1.1rem 1rem 0.9rem;
+  border-left: 4px solid var(--tone, var(--rule-firm));
+  border-bottom: 1px solid var(--rule);
+  background: var(--card);
+  break-inside: avoid;
+}
+
+.rule-id {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  padding-top: 0.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.statement {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.45;
+  margin: 0 0 0.7rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+
+.verdict {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tone);
+  background: var(--tone-wash);
+  border: 1px solid var(--tone);
+  padding: 0.16rem 0.5rem;
+  white-space: nowrap;
+}
+
+.origins {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+.citation {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--structure);
+  border-bottom: 1px solid var(--rule-firm);
+  white-space: nowrap;
+}
+
+/* confidence as five discrete blocks — a meter, not a progress bar */
+.confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.pips { display: inline-flex; gap: 2px; }
+.pip {
+  width: 6px;
+  height: 11px;
+  background: var(--rule-firm);
+}
+.pip.on { background: var(--tone, var(--structure)); }
+
+.reason {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  margin: 0.6rem 0 0;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--rule);
+}
+
+.notes {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: 0.6rem 0 0;
+}
+
+.empty {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  background: var(--card);
+  border: 1px dashed var(--rule-firm);
+  padding: 1.1rem 1.2rem;
+}
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule-firm);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  line-height: 1.7;
+}
+
+/* ---------- print ---------- */
+
+@media print {
+  :root {
+    --paper: #fff;
+    --card: #fff;
+    --ink: #000;
+    --ink-soft: #333;
+    --ink-faint: #555;
+    --rule: #ccc;
+    --rule-firm: #999;
+  }
+  body { font-size: 10.5pt; }
+  .shell { max-width: none; padding: 0; }
+  section { break-inside: auto; }
+  .section-head { break-after: avoid; }
+  .rule { break-inside: avoid; background: #fff; }
+  .tally { break-inside: avoid; }
+  footer { break-before: avoid; }
+}
+
+@media (max-width: 34rem) {
+  .rule { grid-template-columns: 1fr; gap: 0.4rem; }
+  .rule-id { padding-top: 0; }
+}
+</style>
+</head>
+<body>
+<div class="shell"><header class="masthead"><p class="eyebrow">Business logic observability</p><h1>Rule audit<span class="module">legacy-claims</span></h1><p class="provenance-line"><span><b>30</b> rules extracted</span><span>commit <b>answer-key</b></span><span>generated <b>2026-11-07T17:00:15.894Z</b></span><span>kontract v<b>1</b></span></p></header><div class="tally"><div class="tally-cell" style="--tone:var(--verified)"><div class="tally-count">15</div><div class="tally-label">verified</div></div><div class="tally-cell" style="--tone:var(--contradicted)"><div class="tally-count">1</div><div class="tally-label">contradicted</div></div><div class="tally-cell" style="--tone:var(--drifted)"><div class="tally-count">0</div><div class="tally-label">drifted</div></div><div class="tally-cell" style="--tone:var(--unverified)"><div class="tally-count">14</div><div class="tally-label">unverified</div></div></div><section><div class="section-head"><span class="section-numeral">I</span><h2>Rule inventory</h2><span class="section-count">30</span></div><p class="section-note">Every business rule recovered from the module, ordered by extraction confidence. Each carries the file and line it was found at, so any statement here can be checked against the source.</p><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-001</div><div><p class="statement">A claim at status &#39;X&#39; is routed to the legacy reconciliation queue and left pending.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:38</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-002</div><div><p class="statement">A claim where the insured party and the counterparty are the same party is rejected for conflict of interest.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:47</span><span class="citation">docs/underwriting-wiki.md:22</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-003</div><div><p class="statement">Where a claim has no incident date, the policy inception date is used in its place.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:59</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--contradicted);--tone-wash:var(--contradicted-wash);"><div class="rule-id">R-004</div><div><p class="statement">A claim is rejected if the policy lapsed more than 45 days before the incident date.</p><div class="meta"><span class="verdict">contradicted</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:62</span><span class="citation">docs/underwriting-wiki.md:14</span></div><p class="reason">code applies 45 but docs/underwriting-wiki.md states 30</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-005</div><div><p class="statement">UK claims with a settlement estimate below £1,000 are auto-authorised without handler involvement.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:70</span><span class="citation">docs/underwriting-wiki.md:29</span></div><p class="reason">found 1000 at src/authorise-claim.ts:70, docs/underwriting-wiki.md:29</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-006</div><div><p class="statement">CA claims with a settlement estimate below CAD 750 are auto-authorised without handler involvement.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:77</span><span class="citation">docs/underwriting-wiki.md:30</span></div><p class="reason">found 750 at src/authorise-claim.ts:77, docs/underwriting-wiki.md:30</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-007</div><div><p class="statement">A CA claim held by a handler below seniority 3 requires sign-off whatever the claim is worth.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:84</span></div><p class="reason">found 3 at src/authorise-claim.ts:84</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-008</div><div><p class="statement">A claim with a settlement estimate above £10,000 requires senior handler sign-off.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:93</span><span class="citation">src/authorise-claim.ts:92</span></div><p class="reason">found 10000 at src/authorise-claim.ts:93, src/authorise-claim.ts:92</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-009</div><div><p class="statement">A claim from a broker on the referral watchlist requires sign-off whatever the claim is worth.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:107</span><span class="citation">src/authorise-claim.ts:13</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-010</div><div><p class="statement">DAS-brand claims are exempt from the panel-solicitor requirement.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:117</span><span class="citation">docs/underwriting-wiki.md:55</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-011</div><div><p class="statement">A non-DAS claim above £2,500 must use a panel solicitor, or it is rejected.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:118</span><span class="citation">docs/handler-guide.md:14</span></div><p class="reason">found 2500 at src/authorise-claim.ts:118, docs/handler-guide.md:14</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-012</div><div><p class="statement">A disbursement cannot be paid unless its parent claim is authorised (status &#39;A&#39;).</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/disbursements.ts:23</span><span class="citation">docs/handler-guide.md:22</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-013</div><div><p class="statement">A rejected disbursement may be resubmitted at most twice.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/disbursements.ts:29</span><span class="citation">docs/handler-guide.md:33</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-014</div><div><p class="statement">CAD disbursements on CA claims are converted to GBP at a hardcoded rate of 1.72.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:41</span></div><p class="reason">found 1.72 at src/disbursements.ts:41</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-015</div><div><p class="statement">Counsel fees are capped at £3,500 per disbursement, and the handler is not told.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:46</span></div><p class="reason">found 3500 at src/disbursements.ts:46</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-016</div><div><p class="statement">Medical-report disbursements are exempt from the counsel fee cap.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/disbursements.ts:52</span><span class="citation">docs/handler-guide.md:39</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-017</div><div><p class="statement">A non-DAS disbursement above £5,000 requires a panel solicitor.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:60</span></div><p class="reason">found 5000 at src/disbursements.ts:60</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-018</div><div><p class="statement">A BACS submission at or after 15:00 takes the next working day&#39;s value date.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/disbursements.ts:76</span><span class="citation">docs/handler-guide.md:27</span></div><p class="reason">found 15 at src/disbursements.ts:76, docs/handler-guide.md:27</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-019</div><div><p class="statement">On Fridays the BACS cutoff is 12:00 rather than 15:00.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:72</span></div><p class="reason">found 12 at src/disbursements.ts:72</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-020</div><div><p class="statement">A claim&#39;s settlement amount may never exceed £250,000.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema · docs</span><span class="citation">db/schema.sql:32</span><span class="citation">docs/underwriting-wiki.md:42</span></div><p class="reason">found 250000 at db/schema.sql:32, docs/underwriting-wiki.md:42</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-021</div><div><p class="statement">Every claim must reference a handler — the column is NOT NULL and foreign-keyed.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema</span><span class="citation">db/schema.sql:27</span><span class="citation">db/schema.sql:36</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-022</div><div><p class="statement">A disbursement amount must be strictly positive.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema</span><span class="citation">db/schema.sql:50</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-023</div><div><p class="statement">A claim reference follows the form LEI-&lt;market&gt;-&lt;6 digits&gt;.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema · data</span><span class="citation">db/schema.sql:35</span><span class="citation">db/seed.sql:12</span></div><p class="reason">found 6 at db/schema.sql:35, db/seed.sql:12</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-024</div><div><p class="statement">No CA claim carries a disbursement above CAD 25,000.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">data</span><span class="citation">db/seed.sql:35</span></div><p class="reason">asserts 25000 which does not appear in the cited source</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-025</div><div><p class="statement">Every claim at status &#39;A&#39; has both authorised_at and authorised_by populated; no other status does.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">data</span><span class="citation">db/seed.sql:12</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-026</div><div><p class="statement">Cheque payments occur only on non-DAS claims; DAS business is always BACS.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">data</span><span class="citation">db/seed.sql:33</span><span class="citation">db/seed.sql:34</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-027</div><div><p class="statement">A claim above £50,000 requires a second signature from the Claims Manager.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/underwriting-wiki.md:36</span></div><p class="reason">found 50000 at docs/underwriting-wiki.md:36</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-028</div><div><p class="statement">Provisional cover may be granted for 14 days pending confirmation of cover.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/underwriting-wiki.md:49</span></div><p class="reason">found 14 at docs/underwriting-wiki.md:49</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-029</div><div><p class="statement">An ATE claim requires the solicitor&#39;s signed CFA to be uploaded before authorisation.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/underwriting-wiki.md:64</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-030</div><div><p class="statement">A telephone contact attempt must be logged within 2 working days of receipt.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/handler-guide.md:9</span></div><p class="reason">found 2 at docs/handler-guide.md:9</p></div></article></section><section><div class="section-head"><span class="section-numeral">II</span><h2>Contradiction report</h2><span class="section-count">1</span></div><p class="section-note">Rules where two sources disagree. The verdict line names the value the code applies and the value the other source states. These are the highest-priority findings: documentation that confidently states the wrong threshold is worse than no documentation.</p><article class="rule" style="--tone:var(--contradicted);--tone-wash:var(--contradicted-wash);"><div class="rule-id">R-004</div><div><p class="statement">A claim is rejected if the policy lapsed more than 45 days before the incident date.</p><div class="meta"><span class="verdict">contradicted</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code · docs</span><span class="citation">src/authorise-claim.ts:62</span><span class="citation">docs/underwriting-wiki.md:14</span></div><p class="reason">code applies 45 but docs/underwriting-wiki.md states 30</p></div></article></section><section><div class="section-head"><span class="section-numeral">III</span><h2>Dark logic</h2><span class="section-count">15</span></div><p class="section-note">Rules the system enforces that the documentation never mentions. Undocumented behaviour a compliance regime would expect to see written down.</p><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-001</div><div><p class="statement">A claim at status &#39;X&#39; is routed to the legacy reconciliation queue and left pending.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:38</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-003</div><div><p class="statement">Where a claim has no incident date, the policy inception date is used in its place.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:59</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-007</div><div><p class="statement">A CA claim held by a handler below seniority 3 requires sign-off whatever the claim is worth.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:84</span></div><p class="reason">found 3 at src/authorise-claim.ts:84</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-008</div><div><p class="statement">A claim with a settlement estimate above £10,000 requires senior handler sign-off.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:93</span><span class="citation">src/authorise-claim.ts:92</span></div><p class="reason">found 10000 at src/authorise-claim.ts:93, src/authorise-claim.ts:92</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-009</div><div><p class="statement">A claim from a broker on the referral watchlist requires sign-off whatever the claim is worth.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/authorise-claim.ts:107</span><span class="citation">src/authorise-claim.ts:13</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-014</div><div><p class="statement">CAD disbursements on CA claims are converted to GBP at a hardcoded rate of 1.72.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:41</span></div><p class="reason">found 1.72 at src/disbursements.ts:41</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-015</div><div><p class="statement">Counsel fees are capped at £3,500 per disbursement, and the handler is not told.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:46</span></div><p class="reason">found 3500 at src/disbursements.ts:46</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-017</div><div><p class="statement">A non-DAS disbursement above £5,000 requires a panel solicitor.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:60</span></div><p class="reason">found 5000 at src/disbursements.ts:60</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-019</div><div><p class="statement">On Fridays the BACS cutoff is 12:00 rather than 15:00.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">code</span><span class="citation">src/disbursements.ts:72</span></div><p class="reason">found 12 at src/disbursements.ts:72</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-021</div><div><p class="statement">Every claim must reference a handler — the column is NOT NULL and foreign-keyed.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema</span><span class="citation">db/schema.sql:27</span><span class="citation">db/schema.sql:36</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-022</div><div><p class="statement">A disbursement amount must be strictly positive.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema</span><span class="citation">db/schema.sql:50</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-023</div><div><p class="statement">A claim reference follows the form LEI-&lt;market&gt;-&lt;6 digits&gt;.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">schema · data</span><span class="citation">db/schema.sql:35</span><span class="citation">db/seed.sql:12</span></div><p class="reason">found 6 at db/schema.sql:35, db/seed.sql:12</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-024</div><div><p class="statement">No CA claim carries a disbursement above CAD 25,000.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">data</span><span class="citation">db/seed.sql:35</span></div><p class="reason">asserts 25000 which does not appear in the cited source</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-025</div><div><p class="statement">Every claim at status &#39;A&#39; has both authorised_at and authorised_by populated; no other status does.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">data</span><span class="citation">db/seed.sql:12</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-026</div><div><p class="statement">Cheque payments occur only on non-DAS claims; DAS business is always BACS.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">data</span><span class="citation">db/seed.sql:33</span><span class="citation">db/seed.sql:34</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article></section><section><div class="section-head"><span class="section-numeral">IV</span><h2>Dead rules</h2><span class="section-count">4</span></div><p class="section-note">Rules the documentation describes that nothing implements. Either the behaviour was removed and the documentation was not, or it was never built.</p><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-027</div><div><p class="statement">A claim above £50,000 requires a second signature from the Claims Manager.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/underwriting-wiki.md:36</span></div><p class="reason">found 50000 at docs/underwriting-wiki.md:36</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-028</div><div><p class="statement">Provisional cover may be granted for 14 days pending confirmation of cover.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/underwriting-wiki.md:49</span></div><p class="reason">found 14 at docs/underwriting-wiki.md:49</p></div></article><article class="rule" style="--tone:var(--unverified);--tone-wash:var(--unverified-wash);"><div class="rule-id">R-029</div><div><p class="statement">An ATE claim requires the solicitor&#39;s signed CFA to be uploaded before authorisation.</p><div class="meta"><span class="verdict">unverified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/underwriting-wiki.md:64</span></div><p class="reason">no numeric claim to check against the source — qualitative rules need a generated test</p></div></article><article class="rule" style="--tone:var(--verified);--tone-wash:var(--verified-wash);"><div class="rule-id">R-030</div><div><p class="statement">A telephone contact attempt must be logged within 2 working days of receipt.</p><div class="meta"><span class="verdict">verified</span><span class="confidence"><span class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i></span>1.00</span><span class="origins">docs</span><span class="citation">docs/handler-guide.md:9</span></div><p class="reason">found 2 at docs/handler-guide.md:9</p></div></article></section><footer>Generated by krule report from rules.kontract.yaml. <br>Verdicts come from evidence verification: each rule's cited lines are re-read and the values its statement asserts are checked against them. A verified rule is one whose citation supports its statement — it is not proof the code path executes.</footer></div>
+</body>
+</html>

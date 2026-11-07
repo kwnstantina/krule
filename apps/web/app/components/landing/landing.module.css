@@ -1,0 +1,585 @@
+.main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Type ---------- */
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--structure);
+  margin-bottom: 18px;
+}
+
+.headline {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+  text-wrap: balance;
+}
+.headline em {
+  font-style: italic;
+  color: var(--structure);
+}
+
+.lede {
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 34em;
+  margin-bottom: 32px;
+}
+
+.h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(30px, 3.6vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.sectionLede {
+  margin-top: 18px;
+  font-size: 17px;
+  color: var(--ink-soft);
+  max-width: 40em;
+}
+
+/* ---------- Buttons ---------- */
+
+.buttonPrimary,
+.buttonGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.buttonPrimary {
+  background: var(--button-bg);
+  color: var(--button-ink);
+}
+.buttonPrimary:hover {
+  opacity: 0.88;
+}
+.buttonGhost {
+  border: 1px solid var(--line-firm);
+  color: var(--ink);
+}
+.buttonGhost:hover {
+  background: var(--card);
+}
+
+/* ---------- Status colour hooks ---------- */
+
+.verified {
+  --tone: var(--verified);
+  --wash: var(--verified-wash);
+}
+.contradicted {
+  --tone: var(--contradicted);
+  --wash: var(--contradicted-wash);
+}
+.drifted {
+  --tone: var(--drifted);
+  --wash: var(--drifted-wash);
+}
+.unverified {
+  --tone: var(--unverified);
+  --wash: var(--unverified-wash);
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: var(--tone);
+  background: var(--wash);
+  border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+  padding: 96px 0 104px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.heroNote {
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--ink-faint);
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.panelTitle {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+}
+.panelMeta {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+.tile {
+  border-top: 3px solid var(--tone);
+  background: var(--paper-raised);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  padding: 10px 12px;
+}
+.tile strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--tone);
+}
+.tile span {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.ruleList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ruleRow {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 8px;
+  padding: 12px 12px 12px 14px;
+  border-left: 3px solid var(--tone);
+  background: var(--paper-raised);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.ruleId {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  padding-top: 2px;
+}
+.ruleStatement {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.ruleMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ruleMeta code,
+.citations code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.panelCaption {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  padding: 96px 0;
+  border-top: 1px solid var(--line);
+}
+
+.sectionHead {
+  max-width: 720px;
+  margin-bottom: 48px;
+}
+
+.problemGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.problemCard {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+.problemLabel {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--contradicted);
+}
+.problemCard h3 {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 12px 0 10px;
+}
+.problemCard p {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+/* ---------- Steps ---------- */
+
+.steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line-firm);
+}
+.step {
+  padding: 28px 24px 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+.step + .step {
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
+}
+.stepNumber {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+.step h3 {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 500;
+  margin: 10px 0 12px;
+}
+.step p {
+  color: var(--ink-soft);
+  font-size: 15px;
+  flex: 1;
+}
+.stepMeta,
+.stepRoadmap {
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  align-self: flex-start;
+}
+.stepMeta {
+  color: var(--structure);
+}
+.stepMeta::before {
+  content: "$ ";
+  color: var(--ink-faint);
+}
+.stepRoadmap {
+  color: var(--drifted);
+  border: 1px dashed color-mix(in srgb, var(--drifted) 50%, transparent);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ---------- Evidence ---------- */
+
+.evidence {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 64px;
+  align-items: start;
+}
+.evidenceCopy {
+  position: sticky;
+  top: 104px;
+}
+.statusList {
+  margin: 32px 0 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.statusList div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+.statusList dd {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+.evidenceCards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.evidenceCard {
+  display: block;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--tone);
+  border-radius: var(--radius-sm);
+  padding: 20px 22px;
+}
+.evidenceCard:hover {
+  border-color: var(--line-firm);
+  border-left-color: var(--tone);
+  transform: translateX(2px);
+}
+.evidenceCard header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.evidenceStatement {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+.citations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.citations code {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.finding {
+  margin-top: 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--line-firm);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* ---------- Principles ---------- */
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.principles article {
+  background: var(--card);
+  padding: 32px;
+}
+.principles h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.principles p {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+/* ---------- Contact ---------- */
+
+.contact {
+  margin: 24px 0 96px;
+  padding: 56px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.contactActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.contactEmail {
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: var(--ink-faint);
+}
+.contactEmail a {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--structure);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 980px) {
+  .hero,
+  .evidence,
+  .contact {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 64px 0 72px;
+    gap: 48px;
+  }
+  .evidenceCopy {
+    position: static;
+  }
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .step:nth-child(3) {
+    padding-left: 0;
+    border-left: none;
+  }
+  .problemGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 0 16px;
+  }
+  .section {
+    padding: 64px 0;
+  }
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .steps,
+  .principles {
+    grid-template-columns: 1fr;
+  }
+  .step,
+  .step + .step {
+    padding-left: 0;
+    border-left: none;
+  }
+  .contact {
+    padding: 32px 24px;
+  }
+  .statusList div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+/* ---------- Motion ----------
+   Quiet by design: the hero settles in once, sections rise as they scroll into view.
+   The global reduced-motion rule in globals.css switches all of it off. */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+.heroCopy > * {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.heroCopy > :nth-child(2) {
+  animation-delay: 0.06s;
+}
+.heroCopy > :nth-child(3) {
+  animation-delay: 0.12s;
+}
+.heroCopy > :nth-child(4) {
+  animation-delay: 0.18s;
+}
+.heroCopy > :nth-child(5) {
+  animation-delay: 0.24s;
+}
+.panel {
+  animation: rise 0.8s 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ruleRow {
+  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ruleRow:nth-child(1) {
+  animation-delay: 0.45s;
+}
+.ruleRow:nth-child(2) {
+  animation-delay: 0.55s;
+}
+.ruleRow:nth-child(3) {
+  animation-delay: 0.65s;
+}
+
+/* Scroll-linked reveals where the browser supports them; elsewhere content simply shows. */
+@supports (animation-timeline: view()) {
+  .sectionHead,
+  .problemCard,
+  .step,
+  .evidenceCard,
+  .principles article,
+  .contact {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+}

@@ -1,0 +1,474 @@
+# Output of `krule demo fixtures/legacy-claims` (simulated extraction, real Verify).
+# Regenerate with that command and copy rules.kontract.yaml here.
+kontractVersion: 1
+module: legacy-claims
+generatedAt: 2026-11-07T19:29:08.203Z
+commit: answer-key
+rules:
+  - id: R-001
+    statement: A claim at status 'X' is routed to the legacy reconciliation queue
+      and left pending.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 38
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: unverified
+    tags:
+      - dead-rule
+      - hard
+  - id: R-002
+    statement: A claim where the insured party and the counterparty are the same
+      party is rejected for conflict of interest.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 47
+        commit: answer-key
+      - file: docs/underwriting-wiki.md
+        line: 22
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: unverified
+    tags:
+      - normal
+      - easy
+  - id: R-003
+    statement: Where a claim has no incident date, the policy inception date is used
+      in its place.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 59
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: unverified
+    tags:
+      - dark-logic
+      - medium
+  - id: R-004
+    statement: A claim is rejected if the policy lapsed more than 45 days before the
+      incident date.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 62
+        commit: answer-key
+      - file: docs/underwriting-wiki.md
+        line: 14
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: contradicted
+    tags:
+      - contradiction
+      - easy
+  - id: R-005
+    statement: UK claims with a settlement estimate below £1,000 are auto-authorised
+      without handler involvement.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 70
+        commit: answer-key
+      - file: docs/underwriting-wiki.md
+        line: 29
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: verified
+    tags:
+      - normal
+      - easy
+  - id: R-006
+    statement: CA claims with a settlement estimate below CAD 750 are
+      auto-authorised without handler involvement.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 77
+        commit: answer-key
+      - file: docs/underwriting-wiki.md
+        line: 30
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: verified
+    tags:
+      - normal
+      - easy
+  - id: R-007
+    statement: A CA claim held by a handler below seniority 3 requires sign-off
+      whatever the claim is worth.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 84
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: verified
+    tags:
+      - dark-logic
+      - medium
+  - id: R-008
+    statement: A claim with a settlement estimate above £10,000 requires senior
+      handler sign-off.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 93
+        commit: answer-key
+      - file: src/authorise-claim.ts
+        line: 92
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: verified
+    tags:
+      - contradiction
+      - easy
+  - id: R-009
+    statement: A claim from a broker on the referral watchlist requires sign-off
+      whatever the claim is worth.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 107
+        commit: answer-key
+      - file: src/authorise-claim.ts
+        line: 13
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: unverified
+    tags:
+      - dark-logic
+      - hard
+  - id: R-010
+    statement: DAS-brand claims are exempt from the panel-solicitor requirement.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 117
+        commit: answer-key
+      - file: docs/underwriting-wiki.md
+        line: 55
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: unverified
+    tags:
+      - normal
+      - easy
+  - id: R-011
+    statement: A non-DAS claim above £2,500 must use a panel solicitor, or it is rejected.
+    provenance:
+      - file: src/authorise-claim.ts
+        line: 118
+        commit: answer-key
+      - file: docs/handler-guide.md
+        line: 14
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: verified
+    tags:
+      - contradiction
+      - hard
+  - id: R-012
+    statement: A disbursement cannot be paid unless its parent claim is authorised
+      (status 'A').
+    provenance:
+      - file: src/disbursements.ts
+        line: 23
+        commit: answer-key
+      - file: docs/handler-guide.md
+        line: 22
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: unverified
+    tags:
+      - normal
+      - easy
+  - id: R-013
+    statement: A rejected disbursement may be resubmitted at most twice.
+    provenance:
+      - file: src/disbursements.ts
+        line: 29
+        commit: answer-key
+      - file: docs/handler-guide.md
+        line: 33
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: unverified
+    tags:
+      - normal
+      - easy
+  - id: R-014
+    statement: CAD disbursements on CA claims are converted to GBP at a hardcoded
+      rate of 1.72.
+    provenance:
+      - file: src/disbursements.ts
+        line: 41
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: verified
+    tags:
+      - dark-logic
+      - medium
+  - id: R-015
+    statement: Counsel fees are capped at £3,500 per disbursement, and the handler
+      is not told.
+    provenance:
+      - file: src/disbursements.ts
+        line: 46
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: verified
+    tags:
+      - dark-logic
+      - medium
+  - id: R-016
+    statement: Medical-report disbursements are exempt from the counsel fee cap.
+    provenance:
+      - file: src/disbursements.ts
+        line: 52
+        commit: answer-key
+      - file: docs/handler-guide.md
+        line: 39
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: unverified
+    tags:
+      - normal
+      - medium
+  - id: R-017
+    statement: A non-DAS disbursement above £5,000 requires a panel solicitor.
+    provenance:
+      - file: src/disbursements.ts
+        line: 60
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: verified
+    tags:
+      - contradiction
+      - hard
+  - id: R-018
+    statement: A BACS submission at or after 15:00 takes the next working day's
+      value date.
+    provenance:
+      - file: src/disbursements.ts
+        line: 76
+        commit: answer-key
+      - file: docs/handler-guide.md
+        line: 27
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+      - docs
+    status: verified
+    tags:
+      - normal
+      - easy
+  - id: R-019
+    statement: On Fridays the BACS cutoff is 12:00 rather than 15:00.
+    provenance:
+      - file: src/disbursements.ts
+        line: 72
+        commit: answer-key
+    confidence: 1
+    origins:
+      - code
+    status: verified
+    tags:
+      - dark-logic
+      - hard
+  - id: R-020
+    statement: A claim's settlement amount may never exceed £250,000.
+    provenance:
+      - file: db/schema.sql
+        line: 32
+        commit: answer-key
+      - file: docs/underwriting-wiki.md
+        line: 42
+        commit: answer-key
+    confidence: 1
+    origins:
+      - schema
+      - docs
+    status: verified
+    tags:
+      - normal
+      - easy
+  - id: R-021
+    statement: Every claim must reference a handler — the column is NOT NULL and
+      foreign-keyed.
+    provenance:
+      - file: db/schema.sql
+        line: 27
+        commit: answer-key
+      - file: db/schema.sql
+        line: 36
+        commit: answer-key
+    confidence: 1
+    origins:
+      - schema
+    status: unverified
+    tags:
+      - normal
+      - easy
+  - id: R-022
+    statement: A disbursement amount must be strictly positive.
+    provenance:
+      - file: db/schema.sql
+        line: 50
+        commit: answer-key
+    confidence: 1
+    origins:
+      - schema
+    status: unverified
+    tags:
+      - normal
+      - easy
+  - id: R-023
+    statement: A claim reference follows the form LEI-<market>-<6 digits>.
+    provenance:
+      - file: db/schema.sql
+        line: 35
+        commit: answer-key
+      - file: db/seed.sql
+        line: 12
+        commit: answer-key
+    confidence: 1
+    origins:
+      - schema
+      - data
+    status: verified
+    tags:
+      - normal
+      - medium
+  - id: R-024
+    statement: No CA claim carries a disbursement above CAD 25,000.
+    provenance:
+      - file: db/seed.sql
+        line: 35
+        commit: answer-key
+    confidence: 1
+    origins:
+      - data
+    status: unverified
+    tags:
+      - normal
+      - hard
+  - id: R-025
+    statement: Every claim at status 'A' has both authorised_at and authorised_by
+      populated; no other status does.
+    provenance:
+      - file: db/seed.sql
+        line: 12
+        commit: answer-key
+    confidence: 1
+    origins:
+      - data
+    status: unverified
+    tags:
+      - normal
+      - medium
+  - id: R-026
+    statement: Cheque payments occur only on non-DAS claims; DAS business is always BACS.
+    provenance:
+      - file: db/seed.sql
+        line: 33
+        commit: answer-key
+      - file: db/seed.sql
+        line: 34
+        commit: answer-key
+    confidence: 1
+    origins:
+      - data
+    status: unverified
+    tags:
+      - normal
+      - hard
+  - id: R-027
+    statement: A claim above £50,000 requires a second signature from the Claims Manager.
+    provenance:
+      - file: docs/underwriting-wiki.md
+        line: 36
+        commit: answer-key
+    confidence: 1
+    origins:
+      - docs
+    status: verified
+    tags:
+      - dead-rule
+      - medium
+  - id: R-028
+    statement: Provisional cover may be granted for 14 days pending confirmation of cover.
+    provenance:
+      - file: docs/underwriting-wiki.md
+        line: 49
+        commit: answer-key
+    confidence: 1
+    origins:
+      - docs
+    status: verified
+    tags:
+      - dead-rule
+      - medium
+  - id: R-029
+    statement: An ATE claim requires the solicitor's signed CFA to be uploaded
+      before authorisation.
+    provenance:
+      - file: docs/underwriting-wiki.md
+        line: 64
+        commit: answer-key
+    confidence: 1
+    origins:
+      - docs
+    status: unverified
+    tags:
+      - dead-rule
+      - medium
+  - id: R-030
+    statement: A telephone contact attempt must be logged within 2 working days of
+      receipt.
+    provenance:
+      - file: docs/handler-guide.md
+        line: 9
+        commit: answer-key
+    confidence: 1
+    origins:
+      - docs
+    status: verified
+    tags:
+      - dead-rule
+      - easy
