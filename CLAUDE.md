@@ -13,7 +13,7 @@ Run from the repo root unless noted. Turbo fans tasks out across the workspace.
 | Command | What it does |
 |---------|--------------|
 | `pnpm install` | Install the whole workspace |
-| `pnpm dev` | Run **both** apps with hot reload — `web` on :3000, `docs` on :3001 (Turbopack) |
+| `pnpm dev` | Run the `web` app with hot reload on :3000 (Turbopack) |
 | `pnpm build` | Build all packages + apps |
 | `pnpm lint` | ESLint across the workspace (apps run `next lint --max-warnings 0`) |
 | `pnpm check-types` | `tsc --noEmit` across the workspace |
@@ -21,8 +21,7 @@ Run from the repo root unless noted. Turbo fans tasks out across the workspace.
 
 Scope to one workspace with `--filter`:
 ```bash
-pnpm --filter web dev            # rule builder only (:3000)
-pnpm --filter docs dev           # docs site only (:3001)
+pnpm --filter web dev            # the web app only (:3000)
 pnpm --filter @repo/core build   # tsc build of one package
 ```
 
@@ -74,8 +73,8 @@ Added by the **Business Logic Observability** initiative (see `.planning/BRIEF.m
 - Distinct from `@repo/core`'s `RuleSchema`: a kontract rule is a *documented, evidenced* business rule in plain language; a core `Rule` is an *executable* one. Phase 6 links them; there is intentionally no executable-rule field on `KontractRule` yet.
 
 ### Apps
-- `apps/web` — the rule builder (:3000). `app/page.tsx` just renders `RuleBuilder`; the UI is tabbed (AI Assistant, build, test, export) under `app/components/`. All AI backend logic is in `app/api/ai/`.
-- `apps/docs` — Next.js documentation site (:3001). Content-only; does **not** depend on `core`/`ai-service`/`database` (only `@repo/ui`).
+- `apps/web` — the krule site (:3000). `app/page.tsx` is the landing page; `/audits/[module]` renders a kontract (re-verified at build time, see `app/lib/audits.ts`); `/builder` renders `RuleBuilder`, tabbed (build, test, export, AI assistant) under `app/components/`; `/docs` is the documentation. All AI backend logic is in `app/api/ai/`. Design tokens and shared `k-*` primitives live in `app/globals.css` (light/dark via `data-theme`).
+- Documentation lives in `apps/web` under `app/docs/` (served at `/docs`). The old standalone `apps/docs` site was removed because it documented an API (`krule-engine`, `RuleEngine`) that never existed; write docs from the real code.
 
 ## Conventions and gotchas specific to this repo
 
@@ -85,4 +84,4 @@ Added by the **Business Logic Observability** initiative (see `.planning/BRIEF.m
 - **API route pattern**: route handlers validate the body, instantiate the service with `process.env.GROQ_API_KEY`, and wrap DB writes (`generatedRule`, `apiUsage`, etc.) in `try/catch` that logs and continues — DB failures must not fail the AI request. New AI endpoints should follow this and include an `OPTIONS` CORS handler.
 - **The evaluator is correct as of Phase 1 Plan 02** (`.planning/phases/01-foundation/01-02-SUMMARY.md`). Two long-standing bugs were fixed and are covered by tests in `packages/core/src/evaluator.test.ts`: `evaluateCondition` now recurses into nested `ConditionGroup`s (mapping children to booleans before applying the group operator), and group operators resolve through `getOperator`, so operators registered via `registerOperator` actually run. Unknown operators throw descriptive errors instead of an opaque `TypeError`. Earlier notes in this file described these as known bugs — that is no longer accurate.
 - **One characterization quirk remains in `executeRules`, deliberately unchanged.** It sorts by `priority` **desc** and then `results.set(action.target, …)` in that order, so when two matching rules write the *same* target, the **lowest**-priority rule wins the final value. That is the opposite of what "priority" normally implies. It is pinned by a test (`lets the lowest-priority matching rule win a shared action target`) rather than fixed, because changing it would alter evaluation semantics the existing UI and AI-generated rules already depend on. Decide deliberately before changing it.
-- **Package naming**: internal packages are scoped `@repo/*`; the two apps are unscoped (`web`, `docs`). Shared config lives in `@repo/eslint-config` and `@repo/typescript-config` — each package's `eslint.config.js` / `tsconfig.json` extends these.
+- **Package naming**: internal packages are scoped `@repo/*`; the apps are unscoped (`web`, `krule` for the CLI). Shared config lives in `@repo/eslint-config` and `@repo/typescript-config` — each package's `eslint.config.js` / `tsconfig.json` extends these.

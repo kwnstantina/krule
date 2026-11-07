@@ -115,25 +115,7 @@ This Turborepo monorepo contains the following packages and applications:
 ```
 krule/
 ├── apps/
-│   ├── docs/                    # Documentation app (Next.js, port 3001)
-│   │   ├── app/
-│   │   │   ├── docs/           # Documentation pages
-│   │   │   │   ├── what-is-krule/
-│   │   │   │   ├── installation/
-│   │   │   │   ├── quickstart/
-│   │   │   │   ├── rule-engine-basics/
-│   │   │   │   ├── rule-builder/
-│   │   │   │   ├── rule-testing/
-│   │   │   │   ├── configuration/
-│   │   │   │   ├── api/
-│   │   │   │   ├── advanced/
-│   │   │   │   └── examples/
-│   │   │   ├── components/     # Doc components (Sidebar, Footer)
-│   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
-│   │   └── public/             # Static assets
-│   │
-│   └── web/                    # Rule Builder UI (Next.js, port 3000)
+│   └── web/                    # Site, audits, rule builder and docs (Next.js, port 3000)
 │       ├── app/                # Next.js app directory
 │       └── public/             # Static assets
 │
@@ -171,18 +153,10 @@ The heart of KRule - contains the rule evaluation engine, type definitions, and 
 React hooks for seamless integration of the rule engine into React applications. Provides state management and evaluation utilities.
 
 #### **`@repo/ui`**
-Shared React component library used across the web and docs applications. Ensures consistent UI/UX.
-
-#### **`docs` app**
-Comprehensive documentation site with guides, API references, and examples. Built with Next.js 15 and includes:
-- Getting started guides
-- API documentation
-- Real-world examples
-- Best practices
-- Testing strategies
+Shared React component library. Ensures consistent UI/UX.
 
 #### **`web` app**
-Interactive rule builder application where users can visually create, test, and export rules without writing code.
+The krule site (port 3000): landing page, the sample audit workspace (`/audits`), the visual rule builder (`/builder`) and the documentation (`/docs`).
 
 ---
 
@@ -221,22 +195,17 @@ Interactive rule builder application where users can visually create, test, and 
 
 #### Option 1: Run All Applications (Recommended)
 
-Start both the documentation site and rule builder simultaneously:
+Start the site:
 
 ```bash
 pnpm dev
 ```
 
-- **Documentation**: http://localhost:3001
-- **Rule Builder**: http://localhost:3000
+- **Site**: http://localhost:3000
+- **Documentation**: http://localhost:3000/docs
+- **Rule Builder**: http://localhost:3000/builder
 
 #### Option 2: Run Individual Applications
-
-**Documentation site only:**
-```bash
-pnpm --filter docs dev
-```
-Visit: http://localhost:3001
 
 **Rule builder only:**
 ```bash
