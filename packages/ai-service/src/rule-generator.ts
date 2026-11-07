@@ -1,5 +1,6 @@
 import { RuleSchema, type Rule } from "@repo/core/evaluators";
 import { ZodError } from "zod";
+import type { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 import { GroqClient } from "./groq-client";
 import { SYSTEM_PROMPT, REFINEMENT_PROMPT, formatPrompt } from "./prompts";
 
@@ -132,6 +133,19 @@ export class RuleGenerator {
       ],
       { temperature: 0.7 }
     );
+
+    for await (const chunk of stream) {
+      yield chunk;
+    }
+  }
+
+  /**
+   * Stream a response for a full conversation (system prompt + history)
+   */
+  async *chatStream(
+    messages: ChatCompletionMessageParam[]
+  ): AsyncGenerator<string, void, unknown> {
+    const stream = this.groq.chatStream(messages, { temperature: 0.7 });
 
     for await (const chunk of stream) {
       yield chunk;

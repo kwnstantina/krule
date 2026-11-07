@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Validator } from "@repo/ai-service";
-import { db } from "@repo/database";
+import { db, Prisma } from "@repo/database";
 
 /**
  * POST /api/ai/validate
@@ -9,7 +9,7 @@ import { db } from "@repo/database";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { rule, userId } = body;
+    const { rule } = body;
 
     if (!rule) {
       return NextResponse.json(
@@ -28,9 +28,11 @@ export async function POST(req: NextRequest) {
     try {
       await db.validationAttempt.create({
         data: {
-          ruleData: rule as any,
+          ruleData: rule as Prisma.InputJsonValue,
           success: result.valid,
-          errors: result.errors ? (result.errors as any) : null,
+          errors: result.errors
+            ? (result.errors as Prisma.InputJsonValue)
+            : Prisma.DbNull,
           aiExplanation: result.aiExplanation || null,
         },
       });

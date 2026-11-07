@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Initialize services
-    const generator = new RuleGenerator(process.env.GROQ_API_KEY);
     const contextManager = new ContextManager(SYSTEM_PROMPT);
 
     // Load conversation history from database or request
@@ -63,7 +62,7 @@ export async function POST(req: NextRequest) {
           let fullResponse = "";
 
           // Stream each chunk
-          for await (const chunk of generator.generateStream(message)) {
+          for await (const chunk of generator.chatStream(groqMessages)) {
             fullResponse += chunk;
             controller.enqueue(
               encoder.encode(`data: ${JSON.stringify({ content: chunk })}\n\n`)

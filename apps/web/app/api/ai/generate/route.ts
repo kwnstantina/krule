@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RuleGenerator } from "@repo/ai-service";
-import { db } from "@repo/database";
+import { db, Prisma } from "@repo/database";
 
 /**
  * POST /api/ai/generate
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             userId,
             name: result.rule.name || "Untitled Rule",
             prompt,
-            ruleData: result.rule as any,
+            ruleData: result.rule as Prisma.InputJsonValue,
             validated: true,
           },
         });
